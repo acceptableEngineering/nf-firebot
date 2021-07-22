@@ -34,8 +34,9 @@ Using virtualenv:
 ```
 $ pip3 install requirements.txt
 ```
-Create a `.env` file with your secrets:
+Create a `.env` file with your National Forest ID and secret values:
 ```
+NF_IDENTIFIER=ANF
 TELEGRAM_BOT_ID=botXXXXXXXXXX
 TELEGRAM_BOT_SECRET=XXXX-XXXXXXXXXXXXXXX-XXXXXXXXX-XXX
 TELEGRAM_CHAT_ID=-XXXXXXXXXXXXX
