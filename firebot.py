@@ -158,7 +158,7 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
     changed = []
 
     for key in inci_dict:
-        if inci_dict[key] != inci_db_entry_dict[key]:
+        if (key in inci_db_entry_dict) and (inci_dict[key] != inci_db_entry_dict[key]):
             changed.append({
                 "name": key,
                 "new": inci_dict[key],
