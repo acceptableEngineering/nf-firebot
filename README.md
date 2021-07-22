@@ -42,3 +42,13 @@ TELEGRAM_CHAT_ID=-XXXXXXXXXXXXX
 ```
 
 Setting up a Telegram channel, and fetching credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
+
+---
+
+### Execution
+```
+$ python3 firebot.py # Dev/debug mode
+```
+```
+$ python3 firebot.py live # Production mode
+```
