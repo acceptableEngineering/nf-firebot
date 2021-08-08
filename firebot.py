@@ -261,7 +261,7 @@ if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
 
         if COUNT == 1:
             NOTIF_BODY = NOTIF_BODY + 'Today there was only <b>1</b> actual' + \
-                'fire incident in ' + secrets['NF_IDENTIFIER']
+                ' fire incident in ' + secrets['NF_IDENTIFIER']
         else:
             NOTIF_BODY = NOTIF_BODY + 'Today there were <b>' + str(COUNT) + \
                 '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
