@@ -180,7 +180,11 @@ def is_fire(inci_dict):
         'fire' in inci_dict['location'].lower()
         or 'fire' in inci_dict['type'].lower()
         or 'smoke' in inci_dict['type'].lower()
-        or ('fire' in inci_dict['name'].lower() and inci_dict['type'] != 'Resource Order')
+        or 'fire' in inci_dict['name'].lower()
+        and 'Resource Order' not in inci_dict['type']
+        and 'MC DOWN' not in inci_dict['name'].upper()
+        and 'TRAFFIC COLLISION' not in inci_dict['name'].upper()
+        and 'DAILY STATUS' not in inci_dict['name'].upper()
     ):
         return True
 
