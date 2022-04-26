@@ -33,7 +33,7 @@ Using virtualenv:
 ```
 $ pip3 install requirements.txt
 ```
-Create a `.env` file with your National Forest ID and secret values:
+Create a `.env` file with your National Forest ID and secret values. You can use one set of settings in a Production environment, and one locally.
 ```
 NF_IDENTIFIER=ANF
 TELEGRAM_BOT_ID=botXXXXXXXXXX
@@ -47,10 +47,10 @@ Setting up a Telegram channel, and fetching credentials: [Bots: An introduction 
 
 ### Execution
 ```
-$ python3 firebot.py # Dev/debug mode
+$ python3 firebot.py debug # Dev/debug mode
 ```
 ```
-$ python3 firebot.py live # Production mode
+$ python3 firebot.py # Production mode
 ```
 
 ---
