@@ -20,7 +20,6 @@ Before cloning this repo, you'll want to see if your forest of interest is liste
 
 ### Input
 - WildWeb
-- Coming soon: NIFC via ArcGIS
 
 ---
 
@@ -52,4 +51,16 @@ $ python3 firebot.py # Dev/debug mode
 ```
 ```
 $ python3 firebot.py live # Production mode
+```
+
+---
+
+### Automatic Execution
+You will likely want to run the script frequently. One simple approach is to create a Crontab entry with `crontab -e` if your distro supports it. Add:
+```
+* * * * * python3 firebot.py live
+```
+The exact command used in our running Prod environment is an adminttedly scrappy approach, but also posts to a monitored CloudWatch metric:
+```
+* * * * * cd ~/nf-firebot/ && git pull -X theirs > /dev/null 2>&1 && python3 firebot.py live && /usr/bin/aws cloudwatch put-metric-data --metric-name Run --namespace ANF-Firebot --value 1 --region us-west-2
 ```

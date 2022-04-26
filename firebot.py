@@ -11,6 +11,7 @@ import os
 import sys
 import requests
 import tinydb
+import urllib.parse
 from dotenv import dotenv_values
 from lxml import html
 
@@ -51,10 +52,30 @@ def search_attrs(arr, keyname, search):
     return False
 
 
+def format_geo(input_str):
+    """
+    Formats dirty geolocation string to be HTTP request-friendly
+    """
+    input_str = str(input_str)
+    input_str = input_str.replace(' ', '+')
+    return input_str
+
+
+def utf8_encode(input_str):
+    """
+    """
+    if isinstance(input_str, str):
+        input_str = urllib.parse.quote_plus(input_str)
+        return input_str
+    else:
+        return False
+
+
 def telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
+    message_str = utf8_encode(message_str)
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
         secrets['TELEGRAM_BOT_SECRET'] + '/sendMessage?chat_id=' + \
         secrets['TELEGRAM_CHAT_ID'] + '&text=' + message_str + '&parse_mode=html'
@@ -94,7 +115,7 @@ def process_wildcad():
                 'name': empty_fill(item[2]),
                 'type': empty_fill(item[3]),
                 'location': empty_fill(item[4]),
-                'comment': empty_fill(item[5])
+                'comment': format_comment(item[5])
             }
             if ', ' in item[9]: # Item has geo data
                 item_xy_split = item[9].split(', ')
@@ -102,16 +123,6 @@ def process_wildcad():
                 item_dict['y'] = item_xy_split[1]
 
             inci_list.append(item_dict)
-
-
-def format_geo(input_str):
-    """
-    Formats dirty geolocation string to be HTTP request-friendly
-    """
-    input_str = str(input_str)
-    modified_string = input_str.replace(' ', '%2B')
-    modified_string = modified_string.replace('+', '%2C')
-    return modified_string
 
 
 def pad_date_prop(input_int):
@@ -147,6 +158,14 @@ def empty_fill(input_str):
         return ''
 
     return input_str
+
+
+def format_comment(input_str):
+    """
+    """
+    input_str.replace('...', '  ')
+
+    return empty_fill(input_str)
 
 
 def event_has_changed(inci_dict, inci_db_entry_dict):
@@ -218,12 +237,12 @@ if len(inci_list) > 0:
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                sms_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                notification_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
                 for change in event_changes:
                     change_name = change['name']
-                    sms_body += '\n' + uppercase_first(change['name']) + ': ' + \
+                    notification_body += '\n' + uppercase_first(change['name']) + ': ' + \
                         '<s>' + change['old'] + '</s> ' + change['new']
-                telegram(sms_body, 'low')
+                telegram(notification_body, 'low')
             else:
                 logging.debug('%s: unchanged', inci['id'])
         else:
@@ -232,17 +251,17 @@ if len(inci_list) > 0:
                 inci['date'] = get_date()
                 inci['time'] = get_time()
                 db.insert(inci)
-                sms_body = '<b>New Fire Incident</b>' + \
+                notification_body = '<b>New Possible Fire Incident</b>' + \
                     '\nID: ' + empty_fill(inci['id']) + \
                     '\nName: ' + empty_fill(inci['name']) + \
                     '\nType: ' + empty_fill(inci['type']) + \
                     '\nLocation: ' + empty_fill(inci['location']) + \
-                    '\nComment: ' + empty_fill(inci['comment'])
+                    '\nComment: ' + format_comment(inci['comment'])
 
                 if 'x' in inci and 'x' in inci:
-                    sms_body = sms_body + 'Google Maps: https://www.google.com/maps/search/' + \
-                    format_geo(inci['x']) + '%2C' + format_geo(inci['y']) + '%3Fsa=X'
-                telegram(sms_body, 'high')
+                    notification_body = notification_body + '\nGoogle Maps: https://www.google.com/maps/search/' + \
+                    format_geo(inci['x']) + ',' + format_geo(inci['y']) + '?sa=X'
+                telegram(notification_body, 'high')
 
 # ------------------------------------------------------------------------------
 
