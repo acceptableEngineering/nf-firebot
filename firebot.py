@@ -107,11 +107,12 @@ def process_wildcad():
             item_date.append(item_date_split[1])
 
             item_dict = {
-                'id': empty_fill(item[1]),
-                'name': empty_fill(item[2]),
-                'type': empty_fill(item[3]),
-                'location': empty_fill(item[4]),
-                'comment': empty_fill(item[5])
+                'id': empty_fill(item[1]), # "Inc #" field
+                'name': empty_fill(item[2]), # "Name" field
+                'type': empty_fill(item[3]), # "Type" field
+                'location': empty_fill(item[4]), # "Location" field
+                'comment': empty_fill(item[5]), # "WebComment" field
+                'acres': empty_fill(item[8]), # "Acres" field
             }
             if ', ' in item[9]: # Item has geo data
                 item_xy_split = item[9].split(', ')
@@ -148,7 +149,8 @@ def get_time():
 
 def empty_fill(input_str):
     """
-    Pads a given input to two digits, useful for date/time. EG: "7" becomes "07"
+    Returns an empty string when given a useless string, to maintain one-per-line
+    formatting in notification messages
     """
     if len(input_str) < 1 or input_str == '.':
         return ''
@@ -246,7 +248,8 @@ if len(inci_list) > 0:
                     '\nName: ' + empty_fill(inci['name']) + \
                     '\nType: ' + empty_fill(inci['type']) + \
                     '\nLocation: ' + empty_fill(inci['location']) + \
-                    '\nComment: ' + empty_fill(inci['comment'])
+                    '\nComment: ' + empty_fill(inci['comment']) + \
+                    '\nAcres: ' + empty_fill(inci['comment'])
 
                 if 'x' in inci and 'x' in inci:
                     notification_body = notification_body + \
