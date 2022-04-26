@@ -5,19 +5,19 @@ N.F.-FireBot
 A Python script that scrapes WildWeb for US National Forest fire-related data,
 and reports them to a given Telegram channel
 """
+import urllib.parse
 import datetime
 import logging
 import os
 import sys
 import requests
 import tinydb
-import urllib.parse
 from dotenv import dotenv_values
 from lxml import html
 
 # ------------------------------------------------------------------------------
 
-DEBUG = True
+DEBUG = False
 exec_path = os.path.dirname(os.path.realpath(__file__))
 inci_list = []
 db = tinydb.TinyDB(exec_path + '/db.json')
@@ -31,15 +31,13 @@ config = {
 # ------------------------------------------------------------------------------
 
 if len(sys.argv) > 1:
-    if sys.argv[1] == 'live':
-        DEBUG = False
+    if sys.argv[1] == 'debug':
+        DEBUG = True
+        logging.basicConfig(level=logging.DEBUG)
 else:
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.ERROR)
 
 # ------------------------------------------------------------------------------
-
-logging.debug('Running from %s', exec_path)
-
 
 def search_attrs(arr, keyname, search):
     """
@@ -66,11 +64,7 @@ def utf8_encode(input_str):
     Prepares a string for downstream curl by making ASCII Hexadecimal
     replacements. EG: "# 123" becomes "%23 123"
     """
-    if isinstance(input_str, str):
-        input_str = urllib.parse.quote_plus(input_str)
-        return input_str
-    else:
-        return False
+    return urllib.parse.quote_plus(input_str)
 
 
 def telegram(message_str, priority_str):
@@ -87,8 +81,8 @@ def telegram(message_str, priority_str):
 
     if DEBUG is True:
         logging.debug(url)
-    else:
-        requests.get(url)
+
+    requests.get(url)
 
 
 def process_wildcad():
@@ -117,7 +111,7 @@ def process_wildcad():
                 'name': empty_fill(item[2]),
                 'type': empty_fill(item[3]),
                 'location': empty_fill(item[4]),
-                'comment': format_comment(item[5])
+                'comment': empty_fill(item[5])
             }
             if ', ' in item[9]: # Item has geo data
                 item_xy_split = item[9].split(', ')
@@ -160,14 +154,6 @@ def empty_fill(input_str):
         return ''
 
     return input_str
-
-
-def format_comment(input_str):
-    """
-    """
-    input_str.replace('...', '  ')
-
-    return empty_fill(input_str)
 
 
 def event_has_changed(inci_dict, inci_db_entry_dict):
@@ -220,6 +206,8 @@ def uppercase_first(input_str):
 
 # ------------------------------------------------------------------------------
 
+logging.debug('Running from %s', exec_path)
+
 process_wildcad()
 
 if len(inci_list) > 0:
@@ -258,10 +246,11 @@ if len(inci_list) > 0:
                     '\nName: ' + empty_fill(inci['name']) + \
                     '\nType: ' + empty_fill(inci['type']) + \
                     '\nLocation: ' + empty_fill(inci['location']) + \
-                    '\nComment: ' + format_comment(inci['comment'])
+                    '\nComment: ' + empty_fill(inci['comment'])
 
                 if 'x' in inci and 'x' in inci:
-                    notification_body = notification_body + '\nGoogle Maps: https://www.google.com/maps/search/' + \
+                    notification_body = notification_body + \
+                    '\nGoogle Maps: https://www.google.com/maps/search/' + \
                     format_geo(inci['x']) + ',' + format_geo(inci['y']) + '?sa=X'
                 telegram(notification_body, 'high')
 
