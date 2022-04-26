@@ -63,6 +63,8 @@ def format_geo(input_str):
 
 def utf8_encode(input_str):
     """
+    Prepares a string for downstream curl by making ASCII Hexadecimal
+    replacements. EG: "# 123" becomes "%23 123"
     """
     if isinstance(input_str, str):
         input_str = urllib.parse.quote_plus(input_str)
