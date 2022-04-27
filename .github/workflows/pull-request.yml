@@ -21,3 +21,13 @@ jobs:
     - name: Run pylint
       run: |
         pylint $(git ls-files '*.py')
+    - name: Create .env file
+      env:
+        TEST_DOTENV: ${{ secrets.TEST_DOTENV }}
+      run: |
+        cat <<EOT > .env_samp
+${TEST_DOTENV}
+EOT
+    - name: Run FireBot
+      run: |
+        python3 firebot.py debug
