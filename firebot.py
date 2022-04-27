@@ -87,7 +87,7 @@ def telegram(message_str, priority_str):
         secrets['TELEGRAM_BOT_SECRET'],
         secrets['TELEGRAM_CHAT_ID']
     ]):
-        requests.get(url)
+        requests.get(url, timeout=10, allow_redirects=False)
     else:
         logging.error('A required var is not set in .env!')
 
