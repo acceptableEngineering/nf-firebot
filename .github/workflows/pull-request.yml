@@ -23,10 +23,16 @@ jobs:
         pylint $(git ls-files '*.py')
     - name: Create .env file
       env:
-        TEST_DOTENV: ${{ secrets.TEST_DOTENV }}
+        NF_IDENTIFIER: ${{ secrets.NF_IDENTIFIER }}
+        TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
+        TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        cat <<EOT > .env_samp
-        ${TEST_DOTENV}
+        cat <<EOT > .env
+        NF_IDENTIFIER=${NF_IDENTIFIER}
+        TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
+        TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
+        TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
         EOT
     - name: Run FireBot
       run: |
