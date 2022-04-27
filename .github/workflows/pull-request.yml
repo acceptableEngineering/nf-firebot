@@ -20,7 +20,7 @@ jobs:
         pip install pylint requests tinydb python-dotenv lxml
     - name: Run pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint firebot.py
     - name: Create dummy .env file
       run: |
         cat <<EOT > .env
@@ -35,7 +35,7 @@ jobs:
     - name: Remove last entry
       run: |
         cd .github/workflows/
-        python3 pull-request.py
+        python3 pullRequest.py
     - name: Create real .env file
       env:
         NF_IDENTIFIER: ${{ secrets.NF_IDENTIFIER }}
