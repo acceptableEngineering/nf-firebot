@@ -26,7 +26,7 @@ secrets = dotenv_values(".env")
 
 config = {
     "wildcad_url": "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + \
-        "open.htm"
+        "recent.htm"
 }
 # ------------------------------------------------------------------------------
 
