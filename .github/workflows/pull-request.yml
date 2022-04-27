@@ -1,8 +1,9 @@
 name: Build/Deploy
 
 on:
-  pull_request:
-    types: [opened]
+  push:
+    paths:
+      - '**.py'
 
 jobs:
   build:
