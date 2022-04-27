@@ -82,7 +82,14 @@ def telegram(message_str, priority_str):
     if DEBUG is True:
         logging.debug(url)
 
-    requests.get(url)
+    if('False' not in [
+        secrets['TELEGRAM_BOT_ID'],
+        secrets['TELEGRAM_BOT_SECRET'],
+        secrets['TELEGRAM_CHAT_ID']
+    ]):
+        requests.get(url, timeout=10, allow_redirects=False)
+    else:
+        logging.error('A required var is not set in .env!')
 
 
 def process_wildcad():
@@ -92,7 +99,7 @@ def process_wildcad():
     page = requests.get(config['wildcad_url'])
     tree = html.fromstring(page.content)
     rows = tree.xpath('//tr')
-    data = list()
+    data = []
     for row in rows:
         data.append([c.text_content() for c in row.getchildren()])
 
@@ -107,11 +114,12 @@ def process_wildcad():
             item_date.append(item_date_split[1])
 
             item_dict = {
-                'id': empty_fill(item[1]),
-                'name': empty_fill(item[2]),
-                'type': empty_fill(item[3]),
-                'location': empty_fill(item[4]),
-                'comment': empty_fill(item[5])
+                'id': empty_fill(item[1]), # "Inc #" field
+                'name': empty_fill(item[2]), # "Name" field
+                'type': empty_fill(item[3]), # "Type" field
+                'location': empty_fill(item[4]), # "Location" field
+                'comment': empty_fill(item[5]), # "WebComment" field
+                'acres': empty_fill(item[8]), # "Acres" field
             }
             if ', ' in item[9]: # Item has geo data
                 item_xy_split = item[9].split(', ')
@@ -148,7 +156,8 @@ def get_time():
 
 def empty_fill(input_str):
     """
-    Pads a given input to two digits, useful for date/time. EG: "7" becomes "07"
+    Returns an empty string when given a useless string, to maintain one-per-line
+    formatting in notification messages
     """
     if len(input_str) < 1 or input_str == '.':
         return ''
@@ -165,7 +174,11 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
     changed = []
 
     for key in inci_dict:
-        if (key in inci_db_entry_dict) and (inci_dict[key] != inci_db_entry_dict[key]):
+        if (
+            key in inci_db_entry_dict
+            and inci_dict[key] != inci_db_entry_dict[key]
+            and key != 'acres' # Newly-tracked field. Don't notify, just store
+        ):
             changed.append({
                 "name": key,
                 "new": inci_dict[key],
@@ -183,15 +196,19 @@ def is_fire(inci_dict):
     Simple algo determines whether the given incident matches our criteria for
     a fire incident
     """
+    ignore_list = ('RESOURCE ORDER','MC DOWN','TRAFFIC COLLISION','DAILY STATUS')
+
     if(
-        'fire' in inci_dict['location'].lower()
-        or 'fire' in inci_dict['type'].lower()
-        or 'smoke' in inci_dict['type'].lower()
-        or 'fire' in inci_dict['name'].lower()
-        and 'Resource Order' not in inci_dict['type']
-        and 'MC DOWN' not in inci_dict['name'].upper()
-        and 'TRAFFIC COLLISION' not in inci_dict['name'].upper()
-        and 'DAILY STATUS' not in inci_dict['name'].upper()
+        (
+            'FIRE' in inci_dict['type'].strip().upper()
+            or 'FIRE' in inci_dict['type'].strip().upper()
+            or 'SMOKE' in inci_dict['name'].strip().upper()
+        )
+        and
+        (
+            inci_dict['type'].strip().upper() not in ignore_list
+            and inci_dict['name'].strip().upper() not in ignore_list
+        )
     ):
         return True
 
@@ -241,12 +258,14 @@ if len(inci_list) > 0:
                 inci['date'] = get_date()
                 inci['time'] = get_time()
                 db.insert(inci)
+
                 notification_body = '<b>New Possible Fire Incident</b>' + \
                     '\nID: ' + empty_fill(inci['id']) + \
                     '\nName: ' + empty_fill(inci['name']) + \
                     '\nType: ' + empty_fill(inci['type']) + \
                     '\nLocation: ' + empty_fill(inci['location']) + \
-                    '\nComment: ' + empty_fill(inci['comment'])
+                    '\nComment: ' + empty_fill(inci['comment']) + \
+                    '\nAcres: ' + empty_fill(inci['acres'])
 
                 if 'x' in inci and 'x' in inci:
                     notification_body = notification_body + \
