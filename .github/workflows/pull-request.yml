@@ -55,7 +55,7 @@ jobs:
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=Automated%20testing%starting%20for%20deployment"
+        curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=Automated%20testing%20starting%20for%20deployment"
     - name: Run FireBot to generate test notif.
       run: |
         python3 firebot.py debug
