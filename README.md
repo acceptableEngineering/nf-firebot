@@ -75,3 +75,15 @@ https://t.me/firebotanf
 
 And read more about it here:
 https://landmark717.com/blog/telegram-firebot.html
+
+---
+
+### Development, Contributing
+There are several ways to contribute to this project. You can provide feedback, ideas, and suggestions. Or if you want to get your hands dirty, you are welcome to fork this repo and propose changes through a Pull Request!
+
+---
+
+### Disclaimer
+As some first responders are now using ANF-FireBot (see "Live Demo" above):
+
+> THIS FREE SOFTWARE AND THE FULLY-OPERATIONAL INSTALLATION ("ANF FIREBOT") ARE PROVIDED WITHOUT WARRANTY WHATSOEVER. THE DEVELOPER(S), VOLUNTEER(S), AND OTHERS CANNOT BE HELD RESPONSIBLE FOR FALSE REPORTS, MISSED EVENTS/REPORTS, SERVICE OUTAGES, OR OTHER ISSUES. YOU SHOULD CONTINUE TO FOLLOW YOUR ORGANIZATION'S PROTOCOLS, TREATING THE INFORMATION PROVIDED BY FIREBOT AS ANECDOTAL.
