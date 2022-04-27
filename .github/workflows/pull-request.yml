@@ -21,7 +21,22 @@ jobs:
     - name: Run pylint
       run: |
         pylint $(git ls-files '*.py')
-    - name: Create .env file
+    - name: Create dummy .env file
+      run: |
+        cat <<EOT > .env
+        NF_IDENTIFIER=ANF
+        TELEGRAM_BOT_ID=False
+        TELEGRAM_BOT_SECRET=False
+        TELEGRAM_CHAT_ID=False
+        EOT
+    - name: Run FireBot to populate DB
+      run: |
+        python3 firebot.py debug
+    - name: Remove last entry
+      run: |
+        cd .github/workflows/
+        python3 pull-request.py
+    - name: Create real .env file
       env:
         NF_IDENTIFIER: ${{ secrets.NF_IDENTIFIER }}
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
@@ -34,6 +49,6 @@ jobs:
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
         TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
         EOT
-    - name: Run FireBot
+    - name: Run FireBot to generate test notif.
       run: |
         python3 firebot.py debug
