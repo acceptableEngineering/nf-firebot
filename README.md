@@ -1,15 +1,17 @@
 # National Forest FireBot
-A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature
+A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel.
 
 
 New Incident Notifications:
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Notif.png?raw=true)
 
-Changed Incident Notifications:
+Changed Incident Notifications:*
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Change-Notif.png?raw=true)
 
-Optional Daily Recaps:
+Daily Recaps (Optional):*
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Daily-Recap.png?raw=true)
+
+\* Posts as a low priority notification (no push notification). See: `disable_notification` [in the Telegram docs](https://core.telegram.org/bots/api#sendmessage)
 
 ---
 
@@ -64,3 +66,12 @@ The exact command used in our running Prod environment is an adminttedly scrappy
 ```
 * * * * * cd ~/nf-firebot/ && git pull -X theirs > /dev/null 2>&1 && python3 firebot.py live && /usr/bin/aws cloudwatch put-metric-data --metric-name Run --namespace ANF-Firebot --value 1 --region us-west-2
 ```
+
+---
+
+### Live Demo
+This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. You can see "ANF FireBot" in action here:
+https://t.me/firebotanf
+
+And read more about it here:
+https://landmark717.com/blog/telegram-firebot.html
