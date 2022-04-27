@@ -1,7 +1,8 @@
 name: Build/Deploy
 
 on:
-  push
+  pull_request:
+    types: [opened]
 
 jobs:
   build:
@@ -16,6 +17,6 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pylint requests tinydb python-dotenv lxml
-    - name: Deploy static content to S3
+    - name: Run pylint
       run: |
         pylint $(git ls-files '*.py')
