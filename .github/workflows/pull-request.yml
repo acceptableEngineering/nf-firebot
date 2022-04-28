@@ -20,4 +20,42 @@ jobs:
         pip install pylint requests tinydb python-dotenv lxml
     - name: Run pylint
       run: |
-        pylint $(git ls-files '*.py')
+        pylint firebot.py
+    - name: Create dummy .env file
+      run: |
+        cat <<EOT > .env
+        NF_IDENTIFIER=ANF
+        TELEGRAM_BOT_ID=False
+        TELEGRAM_BOT_SECRET=False
+        TELEGRAM_CHAT_ID=False
+        EOT
+    - name: Run FireBot to populate DB
+      run: |
+        python3 firebot.py debug
+    - name: Remove last entry
+      run: |
+        cd .github/workflows/
+        python3 pullRequest.py
+    - name: Create real .env file
+      env:
+        NF_IDENTIFIER: ${{ secrets.NF_IDENTIFIER }}
+        TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
+        TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        cat <<EOT > .env
+        NF_IDENTIFIER=${NF_IDENTIFIER}
+        TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
+        TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
+        TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+        EOT
+    - name: Post heads up message
+      env:
+        TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
+        TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=Automated%20testing%20starting%20for%20deployment"
+    - name: Run FireBot to generate test notif.
+      run: |
+        python3 firebot.py debug
