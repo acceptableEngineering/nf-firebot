@@ -196,7 +196,7 @@ def is_fire(inci_dict):
     Simple algo determines whether the given incident matches our criteria for
     a fire incident
     """
-    ignore_list = ('RESOURCE ORDER','MC DOWN','TRAFFIC COLLISION','DAILY STATUS', 'MEDICAL AID')
+    ignore_list = ('DAILY STATUS')
 
     if(
         (
