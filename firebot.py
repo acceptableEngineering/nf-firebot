@@ -260,13 +260,13 @@ if len(inci_list) > 0:
                     change_name = change['name']
                     NOTIF_BODY += '\n' + uppercase_first(change['name']) + ': ' + \
                         '<s>' + change['old'] + '</s> ' + change['new']
-                    
+
                     if change['name'] == 'x' or change['name'] == 'y':
                         SEND_MAPS_LINK = True
 
-                if SEND_MAPS_LINK == True:
+                if SEND_MAPS_LINK is True:
                     NOTIF_BODY += create_gmaps_url(inci)
-                
+
                 telegram(NOTIF_BODY, 'low')
             else:
                 logging.debug('%s: unchanged', inci['id'])
