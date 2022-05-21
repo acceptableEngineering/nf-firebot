@@ -223,6 +223,15 @@ def uppercase_first(input_str):
 
 # ------------------------------------------------------------------------------
 
+def create_gmaps_url(inci_dict):
+    """
+    Returns a Google Maps URL for given X/Y coordinates
+    """
+    return '\nGoogle Maps: https://www.google.com/maps/search/' + \
+        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X'
+
+# ------------------------------------------------------------------------------
+
 logging.debug('Running from %s', exec_path)
 
 process_wildcad()
@@ -238,18 +247,27 @@ if len(inci_list) > 0:
 
             if event_changes:
                 logging.debug('%s: has changed', inci['id'])
+                SEND_MAPS_LINK = False
 
+                # Event changed from type 'Wildfire'. Delete from DB
                 if is_fire(inci) is False:
                     db.remove(inci_db.id == inci['id'])
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                notification_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                NOTIF_BODY = 'Dispatch changed <b>' + inci['id'] + '</b>'
                 for change in event_changes:
                     change_name = change['name']
-                    notification_body += '\n' + uppercase_first(change['name']) + ': ' + \
+                    NOTIF_BODY += '\n' + uppercase_first(change['name']) + ': ' + \
                         '<s>' + change['old'] + '</s> ' + change['new']
-                telegram(notification_body, 'low')
+                    
+                    if change['name'] == 'x' or change['name'] == 'y':
+                        SEND_MAPS_LINK = True
+
+                if SEND_MAPS_LINK == True:
+                    NOTIF_BODY += create_gmaps_url(inci)
+                
+                telegram(NOTIF_BODY, 'low')
             else:
                 logging.debug('%s: unchanged', inci['id'])
         else:
@@ -259,7 +277,7 @@ if len(inci_list) > 0:
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                notification_body = '<b>New Possible Fire Incident</b>' + \
+                NOTIF_BODY = '<b>New Possible Fire Incident</b>' + \
                     '\nID: ' + empty_fill(inci['id']) + \
                     '\nName: ' + empty_fill(inci['name']) + \
                     '\nType: ' + empty_fill(inci['type']) + \
@@ -267,11 +285,10 @@ if len(inci_list) > 0:
                     '\nComment: ' + empty_fill(inci['comment']) + \
                     '\nAcres: ' + empty_fill(inci['acres'])
 
-                if 'x' in inci and 'x' in inci:
-                    notification_body = notification_body + \
-                    '\nGoogle Maps: https://www.google.com/maps/search/' + \
-                    format_geo(inci['x']) + ',' + format_geo(inci['y']) + '?sa=X'
-                telegram(notification_body, 'high')
+                if 'x' in inci and 'y' in inci:
+                    NOTIF_BODY += create_gmaps_url(inci)
+
+                telegram(NOTIF_BODY, 'high')
 
 # ------------------------------------------------------------------------------
 
