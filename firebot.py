@@ -10,10 +10,20 @@ import datetime
 import logging
 import os
 import sys
+import json_log_formatter
 import requests
 import tinydb
 from dotenv import dotenv_values
 from lxml import html
+
+# Initialize JSON logging
+formatter = json_log_formatter.JSONFormatter()
+
+json_handler = logging.FileHandler(filename='./firebot-log.json')
+json_handler.setFormatter(formatter)
+
+logger = logging.getLogger('firebot_json')
+logger.addHandler(json_handler)
 
 # ------------------------------------------------------------------------------
 
@@ -28,14 +38,15 @@ config = {
     "wildcad_url": "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + \
         "recent.htm"
 }
+
 # ------------------------------------------------------------------------------
 
 if len(sys.argv) > 1:
     if sys.argv[1] == 'debug':
         DEBUG = True
-        logging.basicConfig(level=logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
 else:
-    logging.basicConfig(level=logging.ERROR)
+    logger.setLevel(logging.ERROR)
 
 # ------------------------------------------------------------------------------
 
@@ -80,7 +91,7 @@ def telegram(message_str, priority_str):
         url = url + '&disable_notification=true'
 
     if DEBUG is True:
-        logging.debug(url)
+        logger.debug('Telegram URL: %s', url)
 
     if('False' not in [
         secrets['TELEGRAM_BOT_ID'],
@@ -89,14 +100,20 @@ def telegram(message_str, priority_str):
     ]):
         requests.get(url, timeout=10, allow_redirects=False)
     else:
-        logging.error('A required var is not set in .env!')
+        logger.error('A required var is not set in .env! Cannot send Telegram message')
 
 
 def process_wildcad():
     """
     Data source: Wildcad
     """
-    page = requests.get(config['wildcad_url'])
+    try:
+        page = requests.get(config['wildcad_url'])
+    except requests.exceptions.RequestException as error:
+        logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
+        logger.error(error)
+        sys.exit()
+
     tree = html.fromstring(page.content)
     rows = tree.xpath('//tr')
     data = []
@@ -232,7 +249,7 @@ def create_gmaps_url(inci_dict):
 
 # ------------------------------------------------------------------------------
 
-logging.debug('Running from %s', exec_path)
+logger.debug('Running from %s', exec_path)
 
 process_wildcad()
 
@@ -241,12 +258,12 @@ if len(inci_list) > 0:
         inci_db = tinydb.Query()
 
         if db.search(inci_db.id == inci['id']):
-            logging.debug('%s: found in DB', inci['id'])
+            logger.debug('%s found in DB', inci['id'])
             inci_db_entry = db.search(inci_db.id == inci['id'])
             event_changes = event_has_changed(inci, inci_db_entry)
 
             if event_changes:
-                logging.debug('%s: has changed', inci['id'])
+                logger.debug('%s has changed', inci['id'])
                 SEND_MAPS_LINK = False
 
                 # Event changed from type 'Wildfire'. Delete from DB
@@ -269,10 +286,10 @@ if len(inci_list) > 0:
 
                 telegram(NOTIF_BODY, 'low')
             else:
-                logging.debug('%s: unchanged', inci['id'])
+                logger.debug('%s unchanged', inci['id'])
         else:
             if is_fire(inci):
-                logging.debug('%s not found in DB, new inci', inci['id'])
+                logger.debug('%s not found in DB, new inci', inci['id'])
                 inci['date'] = get_date()
                 inci['time'] = get_time()
                 db.insert(inci)
@@ -298,7 +315,7 @@ date_now = datetime.datetime.now()
 Send daily recap if time is 23:59
 """
 if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
-    logging.debug('Generating daily recap')
+    logger.debug('Generating daily recap')
     inci_db = tinydb.Query()
     results = db.search(inci_db.date == get_date())
     NOTIF_BODY = '<b>Daily Recap:</b> '
