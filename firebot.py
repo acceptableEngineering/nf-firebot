@@ -136,6 +136,7 @@ def process_wildcad():
                 'type': empty_fill(item[3]), # "Type" field
                 'location': empty_fill(item[4]), # "Location" field
                 'comment': empty_fill(item[5]), # "WebComment" field
+                'resources': empty_fill(item[6]), # "Resources" field
                 'acres': empty_fill(item[8]), # "Acres" field
             }
             if ', ' in item[9]: # Item has geo data
@@ -195,6 +196,7 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
             key in inci_db_entry_dict
             and inci_dict[key] != inci_db_entry_dict[key]
             and key != 'acres' # Newly-tracked field. Don't notify, just store
+            and key != 'resources' # Newly-tracked field. Don't notify, just store
         ):
             changed.append({
                 "name": key,
@@ -300,7 +302,8 @@ if len(inci_list) > 0:
                     '\nType: ' + empty_fill(inci['type']) + \
                     '\nLocation: ' + empty_fill(inci['location']) + \
                     '\nComment: ' + empty_fill(inci['comment']) + \
-                    '\nAcres: ' + empty_fill(inci['acres'])
+                    '\nAcres: ' + empty_fill(inci['acres']) + \
+                    '\nResources: ' + empty_fill(inci['resources'])
 
                 if 'x' in inci and 'y' in inci:
                     NOTIF_BODY += create_gmaps_url(inci)
