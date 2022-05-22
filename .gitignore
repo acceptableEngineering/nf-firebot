@@ -1,3 +1,4 @@
 db.json
 .env
 *.DS_Store
+*log.json
