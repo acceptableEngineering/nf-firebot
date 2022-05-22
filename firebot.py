@@ -196,7 +196,6 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
             key in inci_db_entry_dict
             and inci_dict[key] != inci_db_entry_dict[key]
             and key != 'acres' # Newly-tracked field. Don't notify, just store
-            and key != 'resources' # Newly-tracked field. Don't notify, just store
         ):
             changed.append({
                 "name": key,
