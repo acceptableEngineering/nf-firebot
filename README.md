@@ -60,7 +60,7 @@ $ python3 firebot.py # Production mode
 ### Automatic Execution
 You will likely want to run the script frequently. One simple approach is to create a Crontab entry with `crontab -e` if your distro supports it. Add:
 ```
-* * * * * python3 firebot.py live
+* * * * * python3 firebot.py
 ```
 The exact command used in our running Prod environment is an adminttedly scrappy approach, but also posts to a monitored CloudWatch metric:
 ```
