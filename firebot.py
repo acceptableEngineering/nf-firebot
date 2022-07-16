@@ -214,7 +214,7 @@ def is_fire(inci_dict):
     Simple algo determines whether the given incident matches our criteria for
     a fire incident
     """
-    ignore_list = ('DAILY STATUS')
+    ignore_list = ('DAILY STATUS', 'ANF-2234')
 
     if(
         (
