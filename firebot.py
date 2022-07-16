@@ -121,14 +121,16 @@ def process_wildcad():
         data.append([c.text_content() for c in row.getchildren()])
 
     counter = 0
+    checked_ids = []
 
     for item in data:
         counter = counter + 1
-        if counter > 2:
+        if counter > 2 and item[1] not in checked_ids:
             item_date = item[0].split('/')
             item_date_split = item_date[2].split(' ')
             item_date[2] = item_date_split[0]
             item_date.append(item_date_split[1])
+            checked_ids.append(item[1])
 
             item_dict = {
                 'id': empty_fill(item[1]), # "Inc #" field
@@ -214,7 +216,7 @@ def is_fire(inci_dict):
     Simple algo determines whether the given incident matches our criteria for
     a fire incident
     """
-    ignore_list = ('DAILY STATUS', 'ANF-2234')
+    ignore_list = ('DAILY STATUS')
 
     if(
         (
