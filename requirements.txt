@@ -6,7 +6,7 @@ idna==2.10
 isort==5.9.2
 JSON-log-formatter==0.5.1
 lazy-object-proxy==1.6.0
-lxml==4.6.3
+lxml==4.9.1
 mccabe==0.6.1
 PyJWT==2.4.0
 pylint==2.9.3
