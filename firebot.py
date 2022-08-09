@@ -254,7 +254,7 @@ def check_major_fire(inci_dict):
     ):
         logger.debug('Major fire event detected: %s', inci_dict['id'])
 
-        NOTIF_BODY = '<b>New MAJOR Fire Incident</b>' + \
+        this_notif_body = '<b>New MAJOR Fire Incident</b>' + \
                     '\nID: ' + empty_fill(inci_dict['id']) + \
                     '\nName: ' + empty_fill(inci_dict['name']) + \
                     '\nType: ' + empty_fill(inci_dict['type']) + \
@@ -264,9 +264,9 @@ def check_major_fire(inci_dict):
                     '\nResources: ' + empty_fill(inci_dict['resources'])
 
         if 'x' in inci_dict and 'y' in inci_dict:
-            NOTIF_BODY += create_gmaps_url(inci_dict)
+            this_notif_body += create_gmaps_url(inci_dict)
 
-        telegram(NOTIF_BODY, 'special')
+        telegram(this_notif_body, 'special')
 
 # ------------------------------------------------------------------------------
 
