@@ -33,7 +33,7 @@ Before cloning this repo, you'll want to see if your forest of interest is liste
 ### Setup
 Using virtualenv:
 ```
-$ pip3 install requirements.txt
+$ pip3 install -r requirements.txt
 ```
 Create a `.env` file with your National Forest ID and secret values. You can use one set of settings in a Production environment, and one locally.
 ```
