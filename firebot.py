@@ -82,10 +82,15 @@ def telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
+    chat_id = secrets['TELEGRAM_CHAT_ID']
+
+    if priority_str == 'special':
+        chat_id = secrets['TELEGRAM_SPECIAL_CHAT_ID']
+
     message_str = utf8_encode(message_str)
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
         secrets['TELEGRAM_BOT_SECRET'] + '/sendMessage?chat_id=' + \
-        secrets['TELEGRAM_CHAT_ID'] + '&text=' + message_str + '&parse_mode=html'
+        chat_id + '&text=' + message_str + '&parse_mode=html'
 
     if priority_str == 'low':
         url = url + '&disable_notification=true'
@@ -96,9 +101,10 @@ def telegram(message_str, priority_str):
     if('False' not in [
         secrets['TELEGRAM_BOT_ID'],
         secrets['TELEGRAM_BOT_SECRET'],
-        secrets['TELEGRAM_CHAT_ID']
+        chat_id
     ]):
-        requests.get(url, timeout=10, allow_redirects=False)
+        req_result = requests.get(url, timeout=10, allow_redirects=False)
+        logger.debug(req_result)
     else:
         logger.error('A required var is not set in .env! Cannot send Telegram message')
 
@@ -230,10 +236,39 @@ def is_fire(inci_dict):
             and inci_dict['name'].strip().upper() not in ignore_list
         )
     ):
+        check_major_fire(inci_dict)
         return True
 
     return False
 
+
+def check_major_fire(inci_dict):
+    """
+    If major incident, report it to special channel(s) as well
+    """
+    if(
+        'TELEGRAM_SPECIAL_CHAT_ID' in secrets
+        and inci_dict['name'] != 'New'
+        # and inci_dict['resources'].strip() != ''
+        and empty_fill(inci_dict['acres']) != ''
+    ):
+        logger.debug('Major fire event detected: %s', inci_dict['id'])
+
+        this_notif_body = '<b>New MAJOR Fire Incident</b>' + \
+                    '\nID: ' + empty_fill(inci_dict['id']) + \
+                    '\nName: ' + empty_fill(inci_dict['name']) + \
+                    '\nType: ' + empty_fill(inci_dict['type']) + \
+                    '\nLocation: ' + empty_fill(inci_dict['location']) + \
+                    '\nComment: ' + empty_fill(inci_dict['comment']) + \
+                    '\nAcres: ' + empty_fill(inci_dict['acres']) + \
+                    '\nResources: ' + empty_fill(inci_dict['resources'])
+
+        if 'x' in inci_dict and 'y' in inci_dict:
+            this_notif_body += create_gmaps_url(inci_dict)
+
+        telegram(this_notif_body, 'special')
+
+# ------------------------------------------------------------------------------
 
 def uppercase_first(input_str):
     """
@@ -257,8 +292,8 @@ logger.debug('Running from %s', exec_path)
 process_wildcad()
 
 if len(inci_list) > 0:
+    inci_db = tinydb.Query()
     for inci in inci_list:
-        inci_db = tinydb.Query()
 
         if db.search(inci_db.id == inci['id']):
             logger.debug('%s found in DB', inci['id'])
