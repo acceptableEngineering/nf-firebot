@@ -26,7 +26,7 @@ Before cloning this repo, you'll want to see if your forest of interest is liste
 ---
 
 ### Output
-- Telegram Channel
+- Telegram Channel(s)
 
 ---
 
@@ -49,15 +49,28 @@ Setting up a Telegram channel, and fetching credentials: [Bots: An introduction 
 
 ### Execution
 ```
-$ python3 firebot.py debug # Dev/debug mode
+python3 fireboy.py [debug] [mock]
 ```
+
+Bare-bones, no options passed. Good for production use:
 ```
-$ python3 firebot.py # Production mode
+python3 firebot.py
+```
+
+Optional arguments list:
+
+- `debug`: Dev/debug mode which adds many helpful entries to `firebot-log.json`
+
+- `mock`: Uses local mock data found in `.development/` instead of fetching via web
+
+Argument usage/a good local dev example:
+```
+python3 firebot.py debug mock
 ```
 
 ---
 
-### Automatic Execution
+### Automated Execution
 You will likely want to run the script frequently. One simple approach is to create a Crontab entry with `crontab -e` if your distro supports it. Add:
 ```
 * * * * * python3 firebot.py
@@ -69,7 +82,7 @@ The exact command used in our running Prod environment is an adminttedly scrappy
 
 ---
 
-### Live Demo
+### Live Demo / Real-World Usage
 This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. You can see "ANF FireBot" in action here:
 https://t.me/firebotanf
 
@@ -79,11 +92,11 @@ https://landmark717.com/blog/telegram-firebot.html
 ---
 
 ### Development, Contributing
-There are several ways to contribute to this project. You can provide feedback, ideas, and suggestions. Or if you want to get your hands dirty, you are welcome to fork this repo and propose changes through a Pull Request!
+There are several ways to contribute to this project. You can provide feedback, ideas, and suggestions. Or if you want to get your hands dirty, you are welcome to fork this repo and propose changes through a Pull Request! You can setup your own sandbox Telegram channel(s) or message me and I can add you to the existing ones: mark@landmark717.com
 
 ---
 
 ### Disclaimer
-As some first responders are now using ANF-FireBot (see "Live Demo" above):
+As many first responders are now using ANF-FireBot (see "Live Demo" above):
 
-> THIS FREE SOFTWARE AND THE FULLY-OPERATIONAL INSTALLATION ("ANF FIREBOT") ARE PROVIDED WITHOUT WARRANTY WHATSOEVER. THE DEVELOPER(S), VOLUNTEER(S), AND OTHERS CANNOT BE HELD RESPONSIBLE FOR FALSE REPORTS, MISSED EVENTS/REPORTS, SERVICE OUTAGES, OR OTHER ISSUES. YOU SHOULD CONTINUE TO FOLLOW YOUR ORGANIZATION'S PROTOCOLS, TREATING THE INFORMATION PROVIDED BY FIREBOT AS ANECDOTAL.
+THIS FREE SOFTWARE AND THE FULLY-OPERATIONAL INSTALLATION ("ANF FIREBOT") ARE PROVIDED WITHOUT WARRANTY WHATSOEVER. THE DEVELOPER(S), VOLUNTEER(S), AND OTHERS CANNOT BE HELD RESPONSIBLE FOR FALSE REPORTS, MISSED EVENTS/REPORTS, SERVICE OUTAGES, OR OTHER ISSUES. YOU SHOULD CONTINUE TO FOLLOW YOUR ORGANIZATION'S PROTOCOLS, TREATING THE INFORMATION PROVIDED BY FIREBOT AS ANECDOTAL.

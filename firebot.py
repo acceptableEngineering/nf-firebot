@@ -28,8 +28,9 @@ logger.addHandler(json_handler)
 # ------------------------------------------------------------------------------
 
 DEBUG = False
+MOCK_DATA = False
+
 exec_path = os.path.dirname(os.path.realpath(__file__))
-inci_list = []
 db = tinydb.TinyDB(exec_path + '/db.json')
 
 secrets = dotenv_values(".env")
@@ -45,6 +46,12 @@ if len(sys.argv) > 1:
     if sys.argv[1] == 'debug':
         DEBUG = True
         logger.setLevel(logging.DEBUG)
+
+if len(sys.argv) > 2:
+    if sys.argv[2] == 'mock':
+        MOCK_DATA = True
+        config['wildcad_url'] = '.development/wildcad_mock_data.htm'
+        logger.debug('Using mock data')
 else:
     logger.setLevel(logging.ERROR)
 
@@ -60,6 +67,7 @@ def search_attrs(arr, keyname, search):
             return True
     return False
 
+# ------------------------------------------------------------------------------
 
 def format_geo(input_str):
     """
@@ -69,6 +77,7 @@ def format_geo(input_str):
     input_str = input_str.replace(' ', '+')
     return input_str
 
+# ------------------------------------------------------------------------------
 
 def utf8_encode(input_str):
     """
@@ -77,6 +86,7 @@ def utf8_encode(input_str):
     """
     return urllib.parse.quote_plus(input_str)
 
+# ------------------------------------------------------------------------------
 
 def telegram(message_str, priority_str):
     """
@@ -84,7 +94,7 @@ def telegram(message_str, priority_str):
     """
     chat_id = secrets['TELEGRAM_CHAT_ID']
 
-    if priority_str == 'special':
+    if priority_str == 'major':
         chat_id = secrets['TELEGRAM_SPECIAL_CHAT_ID']
 
     message_str = utf8_encode(message_str)
@@ -98,31 +108,49 @@ def telegram(message_str, priority_str):
     if DEBUG is True:
         logger.debug('Telegram URL: %s', url)
 
-    if('False' not in [
+    if('False' in [
         secrets['TELEGRAM_BOT_ID'],
         secrets['TELEGRAM_BOT_SECRET'],
         chat_id
     ]):
-        req_result = requests.get(url, timeout=10, allow_redirects=False)
-        logger.debug(req_result)
-    else:
         logger.error('A required var is not set in .env! Cannot send Telegram message')
+        return False
 
+    req_result = requests.get(url, timeout=10, allow_redirects=False)
+    logger.debug(req_result)
+
+    if req_result:
+        return True
+
+    return False
+
+# ------------------------------------------------------------------------------
 
 def process_wildcad():
     """
     Data source: Wildcad
     """
-    try:
-        page = requests.get(config['wildcad_url'])
-    except requests.exceptions.RequestException as error:
-        logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
-        logger.error(error)
-        sys.exit()
+    if MOCK_DATA:
+        with open(config['wildcad_url'], 'r', encoding="utf-8") as file:
+            page = file.read()
+    else:
+        try:
+            page = requests.get(config['wildcad_url'])
+        except requests.exceptions.RequestException as error:
+            logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
+            logger.error(error)
+            sys.exit(1)
 
-    tree = html.fromstring(page.content)
+        if not page.content:
+            logger.error('Wildcad payload empty %s', config['wildcad_url'])
+            sys.exit(1)
+        else:
+            page = page.content
+
+    tree = html.fromstring(page)
     rows = tree.xpath('//tr')
     data = []
+    inci_list = []
     for row in rows:
         data.append([c.text_content() for c in row.getchildren()])
 
@@ -131,7 +159,7 @@ def process_wildcad():
 
     for item in data:
         counter = counter + 1
-        if counter > 2 and item[1] not in checked_ids:
+        if counter > 2 and item[1] not in checked_ids: # Skip header rows
             item_date = item[0].split('/')
             item_date_split = item_date[2].split(' ')
             item_date[2] = item_date_split[0]
@@ -154,6 +182,9 @@ def process_wildcad():
 
             inci_list.append(item_dict)
 
+    return inci_list
+
+# ------------------------------------------------------------------------------
 
 def pad_date_prop(input_int):
     """
@@ -161,6 +192,7 @@ def pad_date_prop(input_int):
     """
     return str(f'{input_int:02}')
 
+# ------------------------------------------------------------------------------
 
 def get_date():
     """
@@ -170,6 +202,7 @@ def get_date():
     return str(now.year) + '-' + pad_date_prop(now.month) + '-' + \
         pad_date_prop(now.day)
 
+# ------------------------------------------------------------------------------
 
 def get_time():
     """
@@ -179,6 +212,7 @@ def get_time():
     return pad_date_prop(now.hour) + ':' + pad_date_prop(now.minute) + ':' + \
         pad_date_prop(now.second)
 
+# ------------------------------------------------------------------------------
 
 def empty_fill(input_str):
     """
@@ -190,6 +224,7 @@ def empty_fill(input_str):
 
     return input_str
 
+# ------------------------------------------------------------------------------
 
 def event_has_changed(inci_dict, inci_db_entry_dict):
     """
@@ -216,6 +251,7 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
 
     return False
 
+# ------------------------------------------------------------------------------
 
 def is_fire(inci_dict):
     """
@@ -236,37 +272,65 @@ def is_fire(inci_dict):
             and inci_dict['name'].strip().upper() not in ignore_list
         )
     ):
-        check_major_fire(inci_dict)
         return True
 
     return False
 
+# ------------------------------------------------------------------------------
 
-def check_major_fire(inci_dict):
+def process_major_alerts():
     """
-    If major incident, report it to special channel(s) as well
+    If major incident, report it to special channel as well. For this to work,
+    a new secret named TELEGRAM_SPECIAL_CHAT_ID needs to be defined in .env
     """
-    if(
-        'TELEGRAM_SPECIAL_CHAT_ID' in secrets
-        and inci_dict['name'] != 'New'
-        # and inci_dict['resources'].strip() != ''
-        and empty_fill(inci_dict['acres']) != ''
-    ):
-        logger.debug('Major fire event detected: %s', inci_dict['id'])
+    if 'TELEGRAM_SPECIAL_CHAT_ID' not in secrets:
+        logger.debug('TELEGRAM_SPECIAL_CHAT_ID not defined in secrets')
+        return False
 
-        this_notif_body = '<b>New MAJOR Fire Incident</b>' + \
-                    '\nID: ' + empty_fill(inci_dict['id']) + \
-                    '\nName: ' + empty_fill(inci_dict['name']) + \
-                    '\nType: ' + empty_fill(inci_dict['type']) + \
-                    '\nLocation: ' + empty_fill(inci_dict['location']) + \
-                    '\nComment: ' + empty_fill(inci_dict['comment']) + \
-                    '\nAcres: ' + empty_fill(inci_dict['acres']) + \
-                    '\nResources: ' + empty_fill(inci_dict['resources'])
+    inci_db = tinydb.Query()
 
-        if 'x' in inci_dict and 'y' in inci_dict:
-            this_notif_body += create_gmaps_url(inci_dict)
+    for inci in db.all():
+        if(
+            inci['name'] != 'New'
+            and inci['resources'].strip() != ''
+            and empty_fill(inci['acres']) != ''
+            and 'major_sent' not in inci
+        ):
+            logger.debug('New Major event detected: %s', inci['id'])
 
-        telegram(this_notif_body, 'special')
+            this_notif_body = generate_notif_body(inci, 'major')
+
+            if telegram(this_notif_body, 'major'):
+                logger.debug('Adding flags.major_sent flag')
+                inci['major_sent'] = True
+                db.update(inci, inci_db.id == inci['id'])
+
+    return True
+
+# ------------------------------------------------------------------------------
+
+def generate_notif_body(inci_dict, priority_str):
+    """
+    Returns a string usually passed into telegram() with a prepared message
+    """
+    notify_title = 'New Possible Fire Incident'
+
+    if priority_str == 'special':
+        notify_title = 'New MAJOR Fire'
+
+    notif_body = '<b>' + notify_title + '</b>' + \
+                '\nID: ' + empty_fill(inci_dict['id']) + \
+                '\nName: ' + empty_fill(inci_dict['name']) + \
+                '\nType: ' + empty_fill(inci_dict['type']) + \
+                '\nLocation: ' + empty_fill(inci_dict['location']) + \
+                '\nComment: ' + empty_fill(inci_dict['comment']) + \
+                '\nAcres: ' + empty_fill(inci_dict['acres']) + \
+                '\nResources: ' + empty_fill(inci_dict['resources'])
+
+    if 'x' in inci_dict and 'y' in inci_dict:
+        notif_body += create_gmaps_url(inci_dict)
+
+    return notif_body
 
 # ------------------------------------------------------------------------------
 
@@ -287,12 +351,19 @@ def create_gmaps_url(inci_dict):
 
 # ------------------------------------------------------------------------------
 
-logger.debug('Running from %s', exec_path)
+def process_alerts(inci_list):
+    """
+    The heart of this script, this compares what we know with what
+    we just got (DB contents vs. fresh WildWeb fetch):
+        - Delete entry if it no longer passes the is_fire() criteria
+        - Update entry if any of its properties have changed, sends diff. alert
+        - Adds an entry if it is not found in the DB, sends initial alert
+    """
+    if len(inci_list) > 0:
+        inci_db = tinydb.Query()
+    else:
+        return False
 
-process_wildcad()
-
-if len(inci_list) > 0:
-    inci_db = tinydb.Query()
     for inci in inci_list:
 
         if db.search(inci_db.id == inci['id']):
@@ -302,7 +373,7 @@ if len(inci_list) > 0:
 
             if event_changes:
                 logger.debug('%s has changed', inci['id'])
-                SEND_MAPS_LINK = False
+                send_maps_link = False
 
                 # Event changed from type 'Wildfire'. Delete from DB
                 if is_fire(inci) is False:
@@ -310,19 +381,18 @@ if len(inci_list) > 0:
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                NOTIF_BODY = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
                 for change in event_changes:
-                    change_name = change['name']
-                    NOTIF_BODY += '\n' + uppercase_first(change['name']) + ': ' + \
+                    notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
                         '<s>' + change['old'] + '</s> ' + change['new']
 
                     if change['name'] == 'x' or change['name'] == 'y':
-                        SEND_MAPS_LINK = True
+                        send_maps_link = True
 
-                if SEND_MAPS_LINK is True:
-                    NOTIF_BODY += create_gmaps_url(inci)
+                if send_maps_link is True:
+                    notif_body += create_gmaps_url(inci)
 
-                telegram(NOTIF_BODY, 'low')
+                telegram(notif_body, 'low')
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
@@ -332,46 +402,39 @@ if len(inci_list) > 0:
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                NOTIF_BODY = '<b>New Possible Fire Incident</b>' + \
-                    '\nID: ' + empty_fill(inci['id']) + \
-                    '\nName: ' + empty_fill(inci['name']) + \
-                    '\nType: ' + empty_fill(inci['type']) + \
-                    '\nLocation: ' + empty_fill(inci['location']) + \
-                    '\nComment: ' + empty_fill(inci['comment']) + \
-                    '\nAcres: ' + empty_fill(inci['acres']) + \
-                    '\nResources: ' + empty_fill(inci['resources'])
+                telegram(generate_notif_body(inci, 'normal'), 'high')
 
-                if 'x' in inci and 'y' in inci:
-                    NOTIF_BODY += create_gmaps_url(inci)
-
-                telegram(NOTIF_BODY, 'high')
+    return True
 
 # ------------------------------------------------------------------------------
 
-date_now = datetime.datetime.now()
+def process_daily_recap():
+    """
+    Send daily recap if time is 23:59
+    """
+    date_now = datetime.datetime.now()
 
-"""
-Send daily recap if time is 23:59
-"""
-if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
-    logger.debug('Generating daily recap')
-    inci_db = tinydb.Query()
-    results = db.search(inci_db.date == get_date())
-    NOTIF_BODY = '<b>Daily Recap:</b> '
+    if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
+        logger.debug('Generating daily recap')
+        inci_db = tinydb.Query()
+        results = db.search(inci_db.date == get_date())
+        notif_body = '<b>Daily Recap:</b> '
 
-    if results:
-        COUNT = 0
+        if results:
+            if len(results) == 1:
+                notif_body = notif_body + 'Today there was only <b>1</b> actual' + \
+                    ' fire incident in ' + secrets['NF_IDENTIFIER']
+            else:
+                notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
+                    '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-        for result in results:
-            COUNT = COUNT + 1
-
-        if COUNT == 1:
-            NOTIF_BODY = NOTIF_BODY + 'Today there was only <b>1</b> actual' + \
-                ' fire incident in ' + secrets['NF_IDENTIFIER']
-        else:
-            NOTIF_BODY = NOTIF_BODY + 'Today there were <b>' + str(COUNT) + \
-                '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
-
-        telegram(NOTIF_BODY, 'low')
+            telegram(notif_body, 'low')
 
 # ------------------------------------------------------------------------------
+
+logger.debug('Running from %s', exec_path)
+
+process_wildcad_inci_list = process_wildcad()
+process_alerts(process_wildcad_inci_list)
+process_major_alerts()
+process_daily_recap()
