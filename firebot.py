@@ -29,6 +29,7 @@ logger.addHandler(json_handler)
 
 DEBUG = False
 MOCK_DATA = False
+logger.setLevel(logging.ERROR)
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
 db = tinydb.TinyDB(exec_path + '/db.json')
@@ -42,18 +43,16 @@ config = {
 
 # ------------------------------------------------------------------------------
 
-if len(sys.argv) > 1:
-    if sys.argv[1] == 'debug':
+for arg in sys.argv:
+    if arg == 'debug':
         DEBUG = True
         logger.setLevel(logging.DEBUG)
+        logger.debug('Debug log level')
 
-if len(sys.argv) > 2:
-    if sys.argv[2] == 'mock':
+    if arg == 'mock':
         MOCK_DATA = True
         config['wildcad_url'] = '.development/wildcad_mock_data.htm'
-        logger.debug('Using mock data')
-else:
-    logger.setLevel(logging.ERROR)
+        logger.debug('Using mock data: %s', config['wildcad_url'])
 
 # ------------------------------------------------------------------------------
 
@@ -293,7 +292,6 @@ def process_major_alerts():
         if(
             inci['name'] != 'New'
             and inci['resources'].strip() != ''
-            and empty_fill(inci['acres']) != ''
             and 'major_sent' not in inci
         ):
             logger.debug('New Major event detected: %s', inci['id'])
