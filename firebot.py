@@ -311,7 +311,7 @@ def process_major_alerts():
 
 def generate_notif_body(inci_dict, priority_str):
     """
-    -
+    Returns a string usually passed into telegram() with a prepared message
     """
     notify_title = 'New Possible Fire Incident'
 
@@ -353,7 +353,11 @@ def create_gmaps_url(inci_dict):
 
 def process_alerts(inci_list):
     """
-    -
+    The heart of this script, this compares what we know with what
+    we just got (DB contents vs. fresh WildWeb fetch):
+        - Delete entry if it no longer passes the is_fire() criteria
+        - Update entry if any of its properties have changed, sends diff. alert
+        - Adds an entry if it is not found in the DB, sends initial alert
     """
     if len(inci_list) > 0:
         inci_db = tinydb.Query()
