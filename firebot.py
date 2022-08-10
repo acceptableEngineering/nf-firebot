@@ -46,7 +46,8 @@ if len(sys.argv) > 1:
     if sys.argv[1] == 'debug':
         DEBUG = True
         logger.setLevel(logging.DEBUG)
-    
+
+if len(sys.argv) > 2:
     if sys.argv[2] == 'mock':
         MOCK_DATA = True
         config['wildcad_url'] = '.development/wildcad_mock_data.htm'
@@ -118,8 +119,10 @@ def telegram(message_str, priority_str):
     req_result = requests.get(url, timeout=10, allow_redirects=False)
     logger.debug(req_result)
 
-    if(req_result):
+    if req_result:
         return True
+
+    return False
 
 # ------------------------------------------------------------------------------
 
@@ -128,7 +131,8 @@ def process_wildcad():
     Data source: Wildcad
     """
     if MOCK_DATA:
-        page = open(config['wildcad_url'], 'r').read()
+        with open(config['wildcad_url'], 'r', encoding="utf-8") as file:
+            page = file.read()
     else:
         try:
             page = requests.get(config['wildcad_url'])
@@ -279,10 +283,10 @@ def process_major_alerts():
     If major incident, report it to special channel as well. For this to work,
     a new secret named TELEGRAM_SPECIAL_CHAT_ID needs to be defined in .env
     """
-    if('TELEGRAM_SPECIAL_CHAT_ID' not in secrets):
+    if 'TELEGRAM_SPECIAL_CHAT_ID' not in secrets:
         logger.debug('TELEGRAM_SPECIAL_CHAT_ID not defined in secrets')
         return False
-    
+
     inci_db = tinydb.Query()
 
     for inci in db.all():
@@ -296,17 +300,22 @@ def process_major_alerts():
 
             this_notif_body = generate_notif_body(inci, 'major')
 
-            if(telegram(this_notif_body, 'major')):
+            if telegram(this_notif_body, 'major'):
                 logger.debug('Adding flags.major_sent flag')
                 inci['major_sent'] = True
                 db.update(inci, inci_db.id == inci['id'])
 
+    return True
+
 # ------------------------------------------------------------------------------
 
 def generate_notif_body(inci_dict, priority_str):
+    """
+    -
+    """
     notify_title = 'New Possible Fire Incident'
-    
-    if(priority_str == 'special'):
+
+    if priority_str == 'special':
         notify_title = 'New MAJOR Fire'
 
     notif_body = '<b>' + notify_title + '</b>' + \
@@ -320,7 +329,7 @@ def generate_notif_body(inci_dict, priority_str):
 
     if 'x' in inci_dict and 'y' in inci_dict:
         notif_body += create_gmaps_url(inci_dict)
-    
+
     return notif_body
 
 # ------------------------------------------------------------------------------
@@ -343,81 +352,85 @@ def create_gmaps_url(inci_dict):
 # ------------------------------------------------------------------------------
 
 def process_alerts(inci_list):
+    """
+    -
+    """
     if len(inci_list) > 0:
         inci_db = tinydb.Query()
-        for inci in inci_list:
+    else:
+        return False
 
-            if db.search(inci_db.id == inci['id']):
-                logger.debug('%s found in DB', inci['id'])
-                inci_db_entry = db.search(inci_db.id == inci['id'])
-                event_changes = event_has_changed(inci, inci_db_entry)
+    for inci in inci_list:
 
-                if event_changes:
-                    logger.debug('%s has changed', inci['id'])
-                    SEND_MAPS_LINK = False
+        if db.search(inci_db.id == inci['id']):
+            logger.debug('%s found in DB', inci['id'])
+            inci_db_entry = db.search(inci_db.id == inci['id'])
+            event_changes = event_has_changed(inci, inci_db_entry)
 
-                    # Event changed from type 'Wildfire'. Delete from DB
-                    if is_fire(inci) is False:
-                        db.remove(inci_db.id == inci['id'])
-                    else:
-                        db.update(inci, inci_db.id == inci['id'])
+            if event_changes:
+                logger.debug('%s has changed', inci['id'])
+                send_maps_link = False
 
-                    NOTIF_BODY = 'Dispatch changed <b>' + inci['id'] + '</b>'
-                    for change in event_changes:
-                        change_name = change['name']
-                        NOTIF_BODY += '\n' + uppercase_first(change['name']) + ': ' + \
-                            '<s>' + change['old'] + '</s> ' + change['new']
-
-                        if change['name'] == 'x' or change['name'] == 'y':
-                            SEND_MAPS_LINK = True
-
-                    if SEND_MAPS_LINK is True:
-                        NOTIF_BODY += create_gmaps_url(inci)
-
-                    telegram(NOTIF_BODY, 'low')
+                # Event changed from type 'Wildfire'. Delete from DB
+                if is_fire(inci) is False:
+                    db.remove(inci_db.id == inci['id'])
                 else:
-                    logger.debug('%s unchanged', inci['id'])
-            else:
-                if is_fire(inci):
-                    logger.debug('%s not found in DB, new inci', inci['id'])
-                    inci['date'] = get_date()
-                    inci['time'] = get_time()
-                    db.insert(inci)
+                    db.update(inci, inci_db.id == inci['id'])
 
-                    telegram(generate_notif_body(inci, 'normal'), 'high')
+                notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                for change in event_changes:
+                    notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
+                        '<s>' + change['old'] + '</s> ' + change['new']
+
+                    if change['name'] == 'x' or change['name'] == 'y':
+                        send_maps_link = True
+
+                if send_maps_link is True:
+                    notif_body += create_gmaps_url(inci)
+
+                telegram(notif_body, 'low')
+            else:
+                logger.debug('%s unchanged', inci['id'])
+        else:
+            if is_fire(inci):
+                logger.debug('%s not found in DB, new inci', inci['id'])
+                inci['date'] = get_date()
+                inci['time'] = get_time()
+                db.insert(inci)
+
+                telegram(generate_notif_body(inci, 'normal'), 'high')
+
+    return True
 
 # ------------------------------------------------------------------------------
 
-date_now = datetime.datetime.now()
+def process_daily_recap():
+    """
+    Send daily recap if time is 23:59
+    """
+    date_now = datetime.datetime.now()
 
-"""
-Send daily recap if time is 23:59
-"""
-if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
-    logger.debug('Generating daily recap')
-    inci_db = tinydb.Query()
-    results = db.search(inci_db.date == get_date())
-    NOTIF_BODY = '<b>Daily Recap:</b> '
+    if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
+        logger.debug('Generating daily recap')
+        inci_db = tinydb.Query()
+        results = db.search(inci_db.date == get_date())
+        notif_body = '<b>Daily Recap:</b> '
 
-    if results:
-        COUNT = 0
+        if results:
+            if len(results) == 1:
+                notif_body = notif_body + 'Today there was only <b>1</b> actual' + \
+                    ' fire incident in ' + secrets['NF_IDENTIFIER']
+            else:
+                notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
+                    '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-        for result in results:
-            COUNT = COUNT + 1
-
-        if COUNT == 1:
-            NOTIF_BODY = NOTIF_BODY + 'Today there was only <b>1</b> actual' + \
-                ' fire incident in ' + secrets['NF_IDENTIFIER']
-        else:
-            NOTIF_BODY = NOTIF_BODY + 'Today there were <b>' + str(COUNT) + \
-                '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
-
-        telegram(NOTIF_BODY, 'low')
+            telegram(notif_body, 'low')
 
 # ------------------------------------------------------------------------------
 
 logger.debug('Running from %s', exec_path)
 
-inci_list = process_wildcad()
-process_alerts(inci_list)
+process_wildcad_inci_list = process_wildcad()
+process_alerts(process_wildcad_inci_list)
 process_major_alerts()
+process_daily_recap()
