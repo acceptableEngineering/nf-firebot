@@ -48,11 +48,18 @@ Setting up a Telegram channel, and fetching credentials: [Bots: An introduction 
 ---
 
 ### Execution
+No options passed:
 ```
-$ python3 firebot.py debug # Dev/debug mode
+$ python3 firebot.py
 ```
+
+Optional arguments:
+`debug`: Dev/debug mode which adds many helpful entries to `firebot-log.json`
+`mock`: Uses local mock data found in `.development/` instead of fetching via web
+
+Argument usage (good local dev) example:
 ```
-$ python3 firebot.py # Production mode
+$ python3 firebot.py debug mock
 ```
 
 ---
