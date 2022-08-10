@@ -31,7 +31,7 @@ jobs:
         EOT
     - name: Run FireBot to populate DB
       run: |
-        python3 firebot.py debug
+        python3 firebot.py debug mock
     - name: Remove last entry
       run: |
         cd .github/workflows/
