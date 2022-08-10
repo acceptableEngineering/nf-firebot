@@ -48,7 +48,7 @@ for arg in sys.argv:
         DEBUG = True
         logger.setLevel(logging.DEBUG)
         logger.debug('Debug log level')
-    
+
     if arg == 'mock':
         MOCK_DATA = True
         config['wildcad_url'] = '.development/wildcad_mock_data.htm'
