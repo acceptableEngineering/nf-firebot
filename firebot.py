@@ -118,11 +118,7 @@ def telegram(inci_id_int, message_str, priority_str):
 
     req_result = requests.get(url, timeout=10, allow_redirects=False)
 
-    if req_result.status_code == 200:
-        return req_result
-
-    logger.error(req_result.content)
-    return False
+    return req_result
 
 # ------------------------------------------------------------------------------
 
@@ -427,7 +423,7 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
-                    notif_body = 'Dispatch changed <b><a href="https://t.me/anffirebotsandbox/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
+                    notif_body = 'Dispatch changed <b><a href="https://t.me/' + secrets['TELEGRAM_CHAT_ID'] + '/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
@@ -457,9 +453,10 @@ def process_alerts(inci_list):
                 telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
-                telegram_json = json.loads(telegram_json.content)
-                inci['original_message_id'] = telegram_json['result']['message_id']
-                db.update(inci, inci_db.id == inci['id'])
+                if telegram_json.status_code == 200:
+                    telegram_json = json.loads(telegram_json.content)
+                    inci['original_message_id'] = telegram_json['result']['message_id']
+                    db.update(inci, inci_db.id == inci['id'])
 
     return True
 
