@@ -88,7 +88,7 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def telegram(inci_id_int, message_str, priority_str):
+def telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
@@ -451,13 +451,11 @@ def process_alerts(inci_list):
                 telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
-                print(telegram_json)
                 if telegram_json:
-                    if 'status_code' in telegram_json:
-                        if telegram_json.status_code == 200:
-                            telegram_json = json.loads(telegram_json.content)
-                            inci['original_message_id'] = telegram_json['result']['message_id']
-                            db.update(inci, inci_db.id == inci['id'])
+                    if 'status_code' in telegram_json and telegram_json.status_code == 200:
+                        telegram_json = json.loads(telegram_json.content)
+                        inci['original_message_id'] = telegram_json['result']['message_id']
+                        db.update(inci, inci_db.id == inci['id'])
 
     return True
 
