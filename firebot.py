@@ -354,8 +354,8 @@ def create_gmaps_url(inci_dict):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    return '\nGoogle Maps: https://www.google.com/maps/search/' + \
-        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X'
+    return '<a href="https://www.google.com/maps/search/' + \
+        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X">Google Maps</a>'
 
 # ------------------------------------------------------------------------------
 
@@ -451,7 +451,7 @@ def process_alerts(inci_list):
                         send_maps_link = True
 
                 if send_maps_link is True:
-                    notif_body += create_gmaps_url(inci)
+                    notif_body += '\nMaps: ' + create_gmaps_url(inci)
 
                 telegram(inci['id'], notif_body, 'low')
             else:
