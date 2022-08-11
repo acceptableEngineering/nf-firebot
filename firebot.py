@@ -100,7 +100,7 @@ def telegram(inci_id_int, message_str, priority_str):
     message_str = utf8_encode(message_str)
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
         secrets['TELEGRAM_BOT_SECRET'] + '/sendMessage?chat_id=' + \
-        chat_id + '&text=' + message_str + '&parse_mode=html'
+        chat_id + '&text=' + message_str + '&parse_mode=html&disable_web_page_preview=true'
 
     if priority_str == 'low':
         url = url + '&disable_notification=true'
@@ -435,7 +435,10 @@ def process_alerts(inci_list):
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
+                    notif_body = 'Dispatch changed: <b><a href="https://t.me/anffirebotsandbox/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
+                else:
+                    notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
                 for change in event_changes:
                     if change['name'] == 'resources':
