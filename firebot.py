@@ -451,11 +451,13 @@ def process_alerts(inci_list):
                 telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
-                if 'status_code' in telegram_json:
-                    if telegram_json.status_code == 200:
-                        telegram_json = json.loads(telegram_json.content)
-                        inci['original_message_id'] = telegram_json['result']['message_id']
-                        db.update(inci, inci_db.id == inci['id'])
+                print(telegram_json)
+                if telegram_json:
+                    if 'status_code' in telegram_json:
+                        if telegram_json.status_code == 200:
+                            telegram_json = json.loads(telegram_json.content)
+                            inci['original_message_id'] = telegram_json['result']['message_id']
+                            db.update(inci, inci_db.id == inci['id'])
 
     return True
 
