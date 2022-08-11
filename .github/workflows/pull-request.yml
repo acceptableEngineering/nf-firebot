@@ -26,7 +26,7 @@ jobs:
         TELEGRAM_BOT_SECRET=False
         TELEGRAM_CHAT_ID=False
         EOT
-    - name: Run FireBot to populate DB
+    - name: Run FireBot without env vars just to populate its DB
       run: |
         python3 firebot.py debug mock
     - name: Create real .env file
@@ -62,7 +62,7 @@ jobs:
     - name: Modify last entry
       run: |
         cd .github/workflows/
-        python3 modify-last-entry.py
+        python3 modify-an-entry.py
     - name: Test 2
       env:
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}

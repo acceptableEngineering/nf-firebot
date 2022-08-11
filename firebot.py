@@ -436,7 +436,7 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
-                    notif_body = 'Dispatch changed: <b><a href="https://t.me/anffirebotsandbox/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
+                    notif_body = 'Dispatch changed <b><a href="https://t.me/anffirebotsandbox/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
