@@ -88,7 +88,7 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def telegram(inci_id_int, message_str, priority_str):
+def telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
@@ -116,22 +116,7 @@ def telegram(inci_id_int, message_str, priority_str):
         logger.error('A required var is not set in .env! Cannot send Telegram message')
         return False
 
-    req_result = requests.get(url, timeout=10, allow_redirects=False)
-
-    if req_result.status_code == 200:
-        if inci_id_int:
-            # Message sent successfully, store Telegram message ID
-            telegram_json = json.loads(req_result.content)
-            inci_db = tinydb.Query()
-            inci = db.search(inci_db.id == inci_id_int)
-            inci[0]['original_message_id'] = telegram_json['result']['message_id']
-            db.update(inci[0], inci_db.id == inci_id_int)
-            print(db.search(inci_db.id == inci_id_int))
-
-        return req_result
-
-    logger.error(req_result.content)
-    return False
+    return requests.get(url, timeout=10, allow_redirects=False)
 
 # ------------------------------------------------------------------------------
 
@@ -308,7 +293,7 @@ def process_major_alerts():
 
             this_notif_body = generate_notif_body(inci, 'major')
 
-            if telegram(inci['id'], this_notif_body, 'major'):
+            if telegram(this_notif_body, 'major'):
                 logger.debug('Adding flags.major_sent flag')
                 inci['major_sent'] = True
                 db.update(inci, inci_db.id == inci['id'])
@@ -336,7 +321,7 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nResources: ' + empty_fill(inci_dict['resources'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += create_gmaps_url(inci_dict)
+        notif_body += '\nMaps: ' + create_gmaps_url(inci_dict)
 
     return notif_body
 
@@ -354,8 +339,8 @@ def create_gmaps_url(inci_dict):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    return '\nGoogle Maps: https://www.google.com/maps/search/' + \
-        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X'
+    return '<a href="https://www.google.com/maps/search/' + \
+        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X">Google Maps</a>'
 
 # ------------------------------------------------------------------------------
 
@@ -436,7 +421,10 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
-                    notif_body = 'Dispatch changed: <b><a href="https://t.me/anffirebotsandbox/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
+                    notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
+                        secrets['TELEGRAM_CHAT_ID'] + '/' + \
+                        str(inci_db_entry[0]['original_message_id']) + '">' + \
+                        inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
@@ -451,19 +439,26 @@ def process_alerts(inci_list):
                         send_maps_link = True
 
                 if send_maps_link is True:
-                    notif_body += create_gmaps_url(inci)
+                    notif_body += '\nMaps: ' + create_gmaps_url(inci)
 
-                telegram(inci['id'], notif_body, 'low')
+                telegram(notif_body, 'low')
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
-            if is_fire(inci):
+            if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
                 inci['date'] = get_date()
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = telegram(generate_notif_body(inci, 'normal'), 'high')
+
+                # Message sent successfully, store Telegram message ID
+                if telegram_json is not False:
+                    if 'status_code' in telegram_json and 'content' in telegram_json:
+                        telegram_json = json.loads(telegram_json.content)
+                        inci['original_message_id'] = telegram_json['result']['message_id']
+                        db.update(inci, inci_db.id == inci['id'])
 
     return True
 
@@ -489,7 +484,7 @@ def process_daily_recap():
                 notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-            telegram(False, notif_body, 'low')
+            telegram(notif_body, 'low')
 
 # ------------------------------------------------------------------------------
 
