@@ -448,7 +448,7 @@ def process_alerts(inci_list):
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
-            if is_fire(inci):
+            if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
                 inci['date'] = get_date()
                 inci['time'] = get_time()
