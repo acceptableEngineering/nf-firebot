@@ -71,10 +71,12 @@ def search_attrs(arr, keyname, search):
 
 def format_geo(input_str):
     """
-    Formats dirty geolocation string to be HTTP request-friendly
+    Formats dirty geolocation string to fit proper GPS/DM/DMM format
     """
     input_str = str(input_str)
-    input_str = input_str.replace(' ', '+')
+    input_str = input_str.replace(' ', '')
+    input_str = input_str.replace('-', '')
+
     return input_str
 
 # ------------------------------------------------------------------------------
@@ -321,7 +323,8 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nResources: ' + empty_fill(inci_dict['resources'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += '\nMaps: ' + create_gmaps_url(inci_dict)
+        notif_body += '\nMaps: ' + create_gmaps_url(inci_dict) + ' - ' + \
+            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict)
 
     return notif_body
 
@@ -340,7 +343,38 @@ def create_gmaps_url(inci_dict):
     Returns a Google Maps URL for given X/Y coordinates
     """
     return '<a href="https://www.google.com/maps/search/' + \
-        format_geo(inci_dict['x']) + ',' + format_geo(inci_dict['y']) + '?sa=X">Google Maps</a>'
+        str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
+        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X">Google Maps</a>'
+
+# ------------------------------------------------------------------------------
+
+def create_applemaps_url(inci_dict):
+    """
+    Returns a Google Maps URL for given X/Y coordinates
+    """
+    return '<a href="http://maps.apple.com/?ll=' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'] + '">Apple Maps</a>'
+
+# ------------------------------------------------------------------------------
+
+def create_gaigps_url(inci_dict):
+    """
+    Returns a GaiaGPS URL for given X/Y coordinates
+    """
+    return '<a href="https://www.gaiagps.com/map/?lat=' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '&lng=-' + \
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&z=6">Gaia GPS</a>'
+
+# ------------------------------------------------------------------------------
+
+def create_waze_url(inci_dict):
+    """
+    Returns a Waze URL for given X/Y coordinates
+    """
+    return '<a href="https://www.waze.com/ul?ll=' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '%2C-' + \
+        str(convert_gps_to_decimal(inci_dict['y'])) + '">Waze</a>'
 
 # ------------------------------------------------------------------------------
 
@@ -387,6 +421,24 @@ def granular_diff_list(inci_dict, inci_db_dict):
     resource_count = len(change_list_added) + len(change_list_unchanged)
 
     return 'Resources (' + str(resource_count) + '): ' + output_str
+
+# ------------------------------------------------------------------------------
+
+def convert_gps_to_decimal(input_int):
+    """
+    Converts GPS/DM/DMM to decimal geo-coordinates used by all mapping platforms
+    """
+    input_int = format_geo(input_int)
+
+    def conv_dm(this_input_int):
+        degrees = int(this_input_int) // 100
+        minutes = this_input_int - 100*degrees
+        return degrees, minutes
+
+    def decimal_degrees(degrees, minutes):
+        return degrees + minutes/60
+
+    return round(decimal_degrees(*conv_dm(float(input_int))), 4)
 
 # ------------------------------------------------------------------------------
 
@@ -439,7 +491,8 @@ def process_alerts(inci_list):
                         send_maps_link = True
 
                 if send_maps_link is True:
-                    notif_body += '\nMaps: ' + create_gmaps_url(inci)
+                    notif_body += '\nMaps: ' + create_gmaps_url(inci)  + ' - ' + \
+                        create_applemaps_url(inci) + ' - ' + create_waze_url(inci)
 
                 telegram(notif_body, 'low')
             else:
