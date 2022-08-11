@@ -10,6 +10,7 @@ import datetime
 import logging
 import os
 import sys
+import json
 import json_log_formatter
 import requests
 import tinydb
@@ -87,7 +88,7 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def telegram(message_str, priority_str):
+def telegram(inci_id_int, message_str, priority_str):
     """
     Output: Telegram Channel
     """
@@ -116,11 +117,20 @@ def telegram(message_str, priority_str):
         return False
 
     req_result = requests.get(url, timeout=10, allow_redirects=False)
-    logger.debug(req_result)
 
-    if req_result:
-        return True
+    if req_result.status_code == 200:
+        if inci_id_int:
+            # Message sent successfully, store Telegram message ID
+            telegram_json = json.loads(req_result.content)
+            inci_db = tinydb.Query()
+            inci = db.search(inci_db.id == inci_id_int)
+            inci[0]['original_message_id'] = telegram_json['result']['message_id']
+            db.update(inci[0], inci_db.id == inci_id_int)
+            print(db.search(inci_db.id == inci_id_int))
 
+        return req_result
+
+    logger.error(req_result.content)
     return False
 
 # ------------------------------------------------------------------------------
@@ -298,7 +308,7 @@ def process_major_alerts():
 
             this_notif_body = generate_notif_body(inci, 'major')
 
-            if telegram(this_notif_body, 'major'):
+            if telegram(inci['id'], this_notif_body, 'major'):
                 logger.debug('Adding flags.major_sent flag')
                 inci['major_sent'] = True
                 db.update(inci, inci_db.id == inci['id'])
@@ -349,6 +359,52 @@ def create_gmaps_url(inci_dict):
 
 # ------------------------------------------------------------------------------
 
+def granular_diff_list(inci_dict, inci_db_dict):
+    """"
+    Takes in fresh and stored dicts and computes granular diffs (additions,
+    removals, and unchanged). Outputs an HTML formatted string
+    """
+    change_list_added = []
+    change_list_removed = []
+    change_list_unchanged = []
+    resource_list = []
+    inci_db_dict = inci_db_dict[0]
+
+    inci_dict = sorted(inci_dict['resources'].strip().split(' '))
+    inci_db_dict = sorted(inci_db_dict['resources'].strip().split(' '))
+
+    for resource in inci_dict:
+        resource_list.append(resource.strip())
+
+    for resource in inci_db_dict:
+        if resource not in resource_list:
+            resource_list.append(resource.strip())
+
+    for resource in resource_list:
+        if resource not in inci_db_dict: # Newly-added resource
+            change_list_added.append(resource.strip())
+        elif resource not in inci_dict: # Newly-removed resource
+            change_list_removed.append('<s>' + resource.strip() + '</s>')
+        else: # Unchanged resource
+            change_list_unchanged.append(resource.strip())
+
+    output_str = ''
+
+    if len(change_list_added) > 0:
+        output_str += '\n   <em>Added</em> : ' + (', '.join(change_list_added))
+
+    if len(change_list_removed) > 0:
+        output_str += '\n   <em>Removed</em> : ' + (', '.join(change_list_removed))
+
+    if len(change_list_unchanged) > 0:
+        output_str += '\n   <em>No Change</em>: ' + (', '.join(change_list_unchanged))
+
+    resource_count = len(change_list_added) + len(change_list_unchanged)
+
+    return 'Resources (' + str(resource_count) + '): ' + output_str
+
+# ------------------------------------------------------------------------------
+
 def process_alerts(inci_list):
     """
     The heart of this script, this compares what we know with what
@@ -379,9 +435,14 @@ def process_alerts(inci_list):
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                    notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+
                 for change in event_changes:
-                    notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
+
+                    if change['name'] == 'resources':
+                        notif_body += '\n' + granular_diff_list(inci, inci_db_entry)
+                    else:
+                        notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
                         '<s>' + change['old'] + '</s> ' + change['new']
 
                     if change['name'] == 'x' or change['name'] == 'y':
@@ -390,7 +451,7 @@ def process_alerts(inci_list):
                 if send_maps_link is True:
                     notif_body += create_gmaps_url(inci)
 
-                telegram(notif_body, 'low')
+                telegram(inci['id'], notif_body, 'low')
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
@@ -400,7 +461,7 @@ def process_alerts(inci_list):
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                telegram(generate_notif_body(inci, 'normal'), 'high')
+                telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
 
     return True
 
@@ -426,7 +487,7 @@ def process_daily_recap():
                 notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-            telegram(notif_body, 'low')
+            telegram(False, notif_body, 'low')
 
 # ------------------------------------------------------------------------------
 
