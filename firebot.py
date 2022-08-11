@@ -293,7 +293,7 @@ def process_major_alerts():
 
             this_notif_body = generate_notif_body(inci, 'major')
 
-            if telegram(inci['id'], this_notif_body, 'major'):
+            if telegram(this_notif_body, 'major'):
                 logger.debug('Adding flags.major_sent flag')
                 inci['major_sent'] = True
                 db.update(inci, inci_db.id == inci['id'])
@@ -421,7 +421,10 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
-                    notif_body = 'Dispatch changed <b><a href="https://t.me/' + secrets['TELEGRAM_CHAT_ID'] + '/' + str(inci_db_entry[0]['original_message_id']) + '">' + inci['id'] + '</a></b>'
+                    notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
+                        secrets['TELEGRAM_CHAT_ID'] + '/' + \
+                        str(inci_db_entry[0]['original_message_id']) + '">' + \
+                        inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
@@ -438,7 +441,7 @@ def process_alerts(inci_list):
                 if send_maps_link is True:
                     notif_body += '\nMaps: ' + create_gmaps_url(inci)
 
-                telegram(inci['id'], notif_body, 'low')
+                telegram(notif_body, 'low')
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
@@ -448,14 +451,14 @@ def process_alerts(inci_list):
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = telegram(generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
                     if 'status_code' in telegram_json and 'content' in telegram_json:
-                            telegram_json = json.loads(telegram_json.content)
-                            inci['original_message_id'] = telegram_json['result']['message_id']
-                            db.update(inci, inci_db.id == inci['id'])
+                        telegram_json = json.loads(telegram_json.content)
+                        inci['original_message_id'] = telegram_json['result']['message_id']
+                        db.update(inci, inci_db.id == inci['id'])
 
     return True
 
@@ -481,7 +484,7 @@ def process_daily_recap():
                 notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-            telegram(False, notif_body, 'low')
+            telegram(notif_body, 'low')
 
 # ------------------------------------------------------------------------------
 
