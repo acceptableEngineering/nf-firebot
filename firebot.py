@@ -119,15 +119,6 @@ def telegram(inci_id_int, message_str, priority_str):
     req_result = requests.get(url, timeout=10, allow_redirects=False)
 
     if req_result.status_code == 200:
-        if inci_id_int:
-            # Message sent successfully, store Telegram message ID
-            telegram_json = json.loads(req_result.content)
-            inci_db = tinydb.Query()
-            inci = db.search(inci_db.id == inci_id_int)
-            inci[0]['original_message_id'] = telegram_json['result']['message_id']
-            db.update(inci[0], inci_db.id == inci_id_int)
-            print(db.search(inci_db.id == inci_id_int))
-
         return req_result
 
     logger.error(req_result.content)
@@ -336,7 +327,7 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nResources: ' + empty_fill(inci_dict['resources'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += create_gmaps_url(inci_dict)
+        notif_body += '\nMaps: ' + create_gmaps_url(inci_dict)
 
     return notif_body
 
@@ -463,7 +454,12 @@ def process_alerts(inci_list):
                 inci['time'] = get_time()
                 db.insert(inci)
 
-                telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
+
+                # Message sent successfully, store Telegram message ID
+                telegram_json = json.loads(telegram_json.content)
+                inci['original_message_id'] = telegram_json['result']['message_id']
+                db.update(inci, inci_db.id == inci['id'])
 
     return True
 
