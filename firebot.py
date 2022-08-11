@@ -435,10 +435,9 @@ def process_alerts(inci_list):
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                    notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
+                notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
 
                 for change in event_changes:
-
                     if change['name'] == 'resources':
                         notif_body += '\n' + granular_diff_list(inci, inci_db_entry)
                     else:
