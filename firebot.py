@@ -116,9 +116,7 @@ def telegram(inci_id_int, message_str, priority_str):
         logger.error('A required var is not set in .env! Cannot send Telegram message')
         return False
 
-    req_result = requests.get(url, timeout=10, allow_redirects=False)
-
-    return req_result
+    return requests.get(url, timeout=10, allow_redirects=False)
 
 # ------------------------------------------------------------------------------
 
@@ -453,7 +451,7 @@ def process_alerts(inci_list):
                 telegram_json = telegram(inci['id'], generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
-                if telegram_json.status_code == 200:
+                if 'status_code' in telegram_json and telegram_json.status_code == 200:
                     telegram_json = json.loads(telegram_json.content)
                     inci['original_message_id'] = telegram_json['result']['message_id']
                     db.update(inci, inci_db.id == inci['id'])
