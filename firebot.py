@@ -512,7 +512,6 @@ def process_alerts(inci_list):
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
                     telegram_json = json.loads(telegram_json.content)
-                    print(telegram_json)
                     inci['original_message_id'] = telegram_json['result']['message_id']
                     db.update(inci, inci_db.id == inci['id'])
 
