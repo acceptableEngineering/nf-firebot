@@ -163,6 +163,7 @@ def process_wildcad():
             checked_ids.append(item[1])
 
             item_dict = {
+                'time_created': empty_fill(item[0]), # "Date" field
                 'id': empty_fill(item[1]), # "Inc #" field
                 'name': empty_fill(item[2]), # "Name" field
                 'type': empty_fill(item[3]), # "Type" field
@@ -200,16 +201,6 @@ def get_date():
 
 # ------------------------------------------------------------------------------
 
-def get_time():
-    """
-    Returns a standardized HH:MM:SS (24 hour) string, with padding/fill
-    """
-    now = datetime.datetime.now()
-    return pad_date_prop(now.hour) + ':' + pad_date_prop(now.minute) + ':' + \
-        pad_date_prop(now.second)
-
-# ------------------------------------------------------------------------------
-
 def empty_fill(input_str):
     """
     Returns an empty string when given a useless string, to maintain one-per-line
@@ -235,6 +226,7 @@ def event_has_changed(inci_dict, inci_db_entry_dict):
             key in inci_db_entry_dict
             and inci_dict[key] != inci_db_entry_dict[key]
             and key != 'acres' # Newly-tracked field. Don't notify, just store
+            and key != 'time_created' # No sense in notifying on this one
         ):
             changed.append({
                 "name": key,
@@ -288,6 +280,7 @@ def process_major_alerts():
     for inci in db.all():
         if(
             inci['name'] != 'New'
+            and 'ANF-' in inci['name']
             and inci['resources'].strip() != ''
             and 'major_sent' not in inci
         ):
@@ -318,6 +311,7 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nName: ' + empty_fill(inci_dict['name']) + \
                 '\nType: ' + empty_fill(inci_dict['type']) + \
                 '\nLocation: ' + empty_fill(inci_dict['location']) + \
+                '\nCreated: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
                 '\nComment: ' + empty_fill(inci_dict['comment']) + \
                 '\nAcres: ' + empty_fill(inci_dict['acres']) + \
                 '\nResources: ' + empty_fill(inci_dict['resources'])
@@ -327,6 +321,14 @@ def generate_notif_body(inci_dict, priority_str):
             create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict)
 
     return notif_body
+
+# ------------------------------------------------------------------------------
+
+def relative_time(input_str):
+    """
+    Parses a date/time like "08/10/2022 16:08" into "Aug 10 '22, 16:08"
+    """
+    return datetime.datetime.strptime(input_str, '%m/%d/%Y %H:%M').strftime('%b %e \'%y, %H:%S PT')
 
 # ------------------------------------------------------------------------------
 
@@ -473,9 +475,12 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
+                    if '@' in secrets['TELEGRAM_CHAT_ID']:
+                        telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID'].replace('@', '')
+                    else:
+                        telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID']
                     notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
-                        secrets['TELEGRAM_CHAT_ID'] + '/' + \
-                        str(inci_db_entry[0]['original_message_id']) + '">' + \
+                        telegram_chat_id_stripped + '/' + str(inci_db_entry[0]['original_message_id']) + '">' + \
                         inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
@@ -500,18 +505,16 @@ def process_alerts(inci_list):
         else:
             if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
-                inci['date'] = get_date()
-                inci['time'] = get_time()
                 db.insert(inci)
 
                 telegram_json = telegram(generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
-                    if 'status_code' in telegram_json and 'content' in telegram_json:
-                        telegram_json = json.loads(telegram_json.content)
-                        inci['original_message_id'] = telegram_json['result']['message_id']
-                        db.update(inci, inci_db.id == inci['id'])
+                    telegram_json = json.loads(telegram_json.content)
+                    print(telegram_json)
+                    inci['original_message_id'] = telegram_json['result']['message_id']
+                    db.update(inci, inci_db.id == inci['id'])
 
     return True
 
