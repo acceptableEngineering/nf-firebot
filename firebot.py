@@ -193,11 +193,10 @@ def pad_date_prop(input_int):
 
 def get_date():
     """
-    Returns a standardized YYYY-MM-DD string, with padding/fill
+    Returns a MM/DD/YYYY string, with padding/fill, EG: 08/01/2022
     """
     now = datetime.datetime.now()
-    return str(now.year) + '-' + pad_date_prop(now.month) + '-' + \
-        pad_date_prop(now.day)
+    return str(pad_date_prop(now.month) + '/' + pad_date_prop(now.day) + '/' + str(now.year))
 
 # ------------------------------------------------------------------------------
 
@@ -526,10 +525,10 @@ def process_daily_recap():
     """
     date_now = datetime.datetime.now()
 
-    if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
+    if (str(date_now.hour) + ':' + str(date_now.minute) == '23:59') or True:
         logger.debug('Generating daily recap')
         inci_db = tinydb.Query()
-        results = db.search(inci_db.date == get_date())
+        results = db.search(inci_db.time_created.search(get_date()))
         notif_body = '<b>Daily Recap:</b> '
 
         if results:
