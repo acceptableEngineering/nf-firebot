@@ -137,7 +137,12 @@ def process_wildcad():
             logger.error(error)
             sys.exit(1)
 
-        if not page.content or page.headers['Content-Length'] == 0 or '</HTML>' not in page.content:
+        if (
+            'content' not in page or
+            page.content == '' or
+            page.headers['Content-Length'] == 0 or
+            '</HTML>' not in page.content
+        ):
             logger.error('Wildcad payload empty %s', config['wildcad_url'])
             sys.exit(1)
         else:
