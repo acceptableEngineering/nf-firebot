@@ -525,7 +525,7 @@ def process_daily_recap():
     """
     date_now = datetime.datetime.now()
 
-    if (str(date_now.hour) + ':' + str(date_now.minute) == '23:59') or True:
+    if str(date_now.hour) + ':' + str(date_now.minute) == '23:59':
         logger.debug('Generating daily recap')
         inci_db = tinydb.Query()
         results = db.search(inci_db.time_created.search(get_date()))
