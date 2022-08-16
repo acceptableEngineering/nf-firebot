@@ -137,7 +137,7 @@ def process_wildcad():
             logger.error(error)
             sys.exit(1)
 
-        if not page.content:
+        if not page.content or page.headers['Content-Length'] == 0 or '</HTML>' not in page.content:
             logger.error('Wildcad payload empty %s', config['wildcad_url'])
             sys.exit(1)
         else:
@@ -480,7 +480,8 @@ def process_alerts(inci_list):
                     else:
                         telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID']
                     notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
-                        telegram_chat_id_stripped + '/' + str(inci_db_entry[0]['original_message_id']) + '">' + \
+                        telegram_chat_id_stripped + '/' + \
+                        str(inci_db_entry[0]['original_message_id']) + '">' + \
                         inci['id'] + '</a></b>'
                 else:
                     notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
