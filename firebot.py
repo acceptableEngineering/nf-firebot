@@ -69,18 +69,6 @@ def search_attrs(arr, keyname, search):
 
 # ------------------------------------------------------------------------------
 
-def format_geo(input_str):
-    """
-    Formats dirty geolocation string to fit proper GPS/DM/DMM format
-    """
-    input_str = str(input_str)
-    input_str = input_str.replace(' ', '')
-    input_str = input_str.replace('-', '')
-
-    return input_str
-
-# ------------------------------------------------------------------------------
-
 def utf8_encode(input_str):
     """
     Prepares a string for downstream curl by making ASCII Hexadecimal
@@ -211,7 +199,7 @@ def empty_fill(input_str):
     if len(input_str) < 1 or input_str == '.':
         return ''
 
-    return input_str
+    return str(input_str)
 
 # ------------------------------------------------------------------------------
 
@@ -312,15 +300,22 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nID: ' + empty_fill(inci_dict['id']) + \
                 '\nName: ' + empty_fill(inci_dict['name']) + \
                 '\nType: ' + empty_fill(inci_dict['type']) + \
-                '\nLocation: ' + empty_fill(inci_dict['location']) + \
                 '\nCreated: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
                 '\nComment: ' + empty_fill(inci_dict['comment']) + \
                 '\nAcres: ' + empty_fill(inci_dict['acres']) + \
-                '\nResources: ' + empty_fill(inci_dict['resources'])
+                '\nResources: ' + empty_fill(inci_dict['resources']) + \
+                '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += '\nMaps: ' + create_gmaps_url(inci_dict) + ' - ' + \
-            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict)
+        notif_body += '\nLocation Resources: ' + \
+            '\n   <em>Maps: ' + create_gmaps_url(inci_dict) + ' - ' + \
+            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict) + \
+            ' - ' + create_adsbex_url(inci_dict)
+
+        notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', -' + \
+            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
 
     return notif_body
 
@@ -348,7 +343,7 @@ def create_gmaps_url(inci_dict):
     """
     return '<a href="https://www.google.com/maps/search/' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X">Google Maps</a>'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X">Google</a>'
 
 # ------------------------------------------------------------------------------
 
@@ -358,17 +353,18 @@ def create_applemaps_url(inci_dict):
     """
     return '<a href="http://maps.apple.com/?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'] + '">Apple Maps</a>'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'] + '">Apple</a>'
 
 # ------------------------------------------------------------------------------
 
-def create_gaigps_url(inci_dict):
+def create_adsbex_url(inci_dict):
     """
-    Returns a GaiaGPS URL for given X/Y coordinates
+    Returns an ADSB Exchange URL for given X/Y coordinates
     """
-    return '<a href="https://www.gaiagps.com/map/?lat=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + '&lng=-' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&z=6">Gaia GPS</a>'
+    return '<a href="https://globe.adsbexchange.com/?lat=' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=-' + \
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id'] + \
+            '">ADS-B Ex.</a>'
 
 # ------------------------------------------------------------------------------
 
@@ -414,10 +410,10 @@ def granular_diff_list(inci_dict, inci_db_dict):
     output_str = ''
 
     if len(change_list_added) > 0:
-        output_str += '\n   <em>Added</em> : ' + (', '.join(change_list_added))
+        output_str += '\n   <em>Added</em>: ' + (', '.join(change_list_added))
 
     if len(change_list_removed) > 0:
-        output_str += '\n   <em>Removed</em> : ' + (', '.join(change_list_removed))
+        output_str += '\n   <em>Removed</em>: ' + (', '.join(change_list_removed))
 
     if len(change_list_unchanged) > 0:
         output_str += '\n   <em>No Change</em>: ' + (', '.join(change_list_unchanged))
@@ -432,15 +428,35 @@ def convert_gps_to_decimal(input_int):
     """
     Converts GPS/DM/DMM to decimal geo-coordinates used by all mapping platforms
     """
-    input_int = format_geo(input_int)
+    def format_geo(input_str):
+        str_split = input_int.split(' ')
+        secondary_str_split = str_split[1].split('.')
+
+        # The second D in Degrees Decimal Minutes is missing a leading zero. Add it:
+        if len(secondary_str_split[0]) < 2:
+            input_str = str(str_split[0] + '0' + secondary_str_split[0] + \
+            '.' + secondary_str_split[1])
+
+        input_str = str(input_str)
+        input_str = input_str.replace(' ', '')
+        input_str = input_str.replace('-', '')
+        return input_str
+
+    # --------------------------------------------------------------------------
 
     def conv_dm(this_input_int):
         degrees = int(this_input_int) // 100
         minutes = this_input_int - 100*degrees
         return degrees, minutes
 
+    # --------------------------------------------------------------------------
+
     def decimal_degrees(degrees, minutes):
         return degrees + minutes/60
+
+    # --------------------------------------------------------------------------
+
+    input_int = format_geo(input_int)
 
     return round(decimal_degrees(*conv_dm(float(input_int))), 4)
 
@@ -499,8 +515,15 @@ def process_alerts(inci_list):
                         send_maps_link = True
 
                 if send_maps_link is True:
-                    notif_body += '\nMaps: ' + create_gmaps_url(inci)  + ' - ' + \
-                        create_applemaps_url(inci) + ' - ' + create_waze_url(inci)
+                    notif_body += '\nLocation Resources: ' + \
+                    '\n   <em>Maps: ' + create_gmaps_url(inci)  + ' - ' + \
+                        create_applemaps_url(inci) + ' - ' + create_waze_url(inci) + \
+                        ' - ' + create_adsbex_url(inci)
+
+                    notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci['x']) + ', ' + \
+                    str(inci['y'])) + '\n   Lat/Long (DD):    ' + \
+                    empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', -' + \
+                    str(convert_gps_to_decimal(inci['y']))) + '</em>'
 
                 telegram(notif_body, 'low')
             else:
