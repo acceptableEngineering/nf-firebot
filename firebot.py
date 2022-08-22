@@ -270,7 +270,7 @@ def process_major_alerts():
     for inci in db.all():
         if(
             inci['name'] != 'New'
-            and 'ANF-' in inci['name']
+            and 'ANF-' in inci['id']
             and inci['resources'].strip() != ''
             and 'major_sent' not in inci
         ):
