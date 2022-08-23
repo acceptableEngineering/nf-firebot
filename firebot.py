@@ -271,6 +271,7 @@ def process_major_alerts():
         if(
             inci['name'] != 'New'
             and 'ANF-' in inci['id']
+            and 'resources' in inci
             and inci['resources'].strip() != ''
             and 'major_sent' not in inci
         ):
@@ -516,14 +517,14 @@ def process_alerts(inci_list):
 
                 if send_maps_link is True:
                     notif_body += '\nLocation Resources: ' + \
-                    '\n   <em>Maps: ' + create_gmaps_url(inci)  + ' - ' + \
+                        '\n   <em>Maps: ' + create_gmaps_url(inci)  + ' - ' + \
                         create_applemaps_url(inci) + ' - ' + create_waze_url(inci) + \
                         ' - ' + create_adsbex_url(inci)
 
                     notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci['x']) + ', ' + \
-                    str(inci['y'])) + '\n   Lat/Long (DD):    ' + \
-                    empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', -' + \
-                    str(convert_gps_to_decimal(inci['y']))) + '</em>'
+                        str(inci['y'])) + '\n   Lat/Long (DD):    ' + \
+                        empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', -' + \
+                        str(convert_gps_to_decimal(inci['y']))) + '</em>'
 
                 telegram(notif_body, 'low')
             else:
