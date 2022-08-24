@@ -394,10 +394,11 @@ def granular_diff_list(inci_dict, inci_db_dict):
     inci_db_dict = sorted(inci_db_dict['resources'].strip().split(' '))
 
     for resource in inci_dict:
-        resource_list.append(resource.strip())
+        if resource.strip() != '':
+            resource_list.append(resource.strip())
 
     for resource in inci_db_dict:
-        if resource not in resource_list:
+        if resource not in resource_list and resource.strip() != '':
             resource_list.append(resource.strip())
 
     for resource in resource_list:

@@ -59,17 +59,33 @@ jobs:
       run: |
         python3 firebot.py debug mock
 
-    - name: Modify last entry
+    - name: Add Resources from First DB Entry
       run: |
         cd .github/workflows/
-        python3 modify-an-entry.py
+        python3 add-resources-to-an-entry.py
     - name: Test 2
       env:
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        TEXT='NOTICE: TEST 2, Changed Incident'
+        TEXT='NOTICE: TEST 2, Resources Removed'
+        curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
+    - name: Run FireBot to generate test notif.
+      run: |
+        python3 firebot.py debug mock
+
+    - name: Remove Resources from First DB Entry
+      run: |
+        cd .github/workflows/
+        python3 remove-resources-from-an-entry.py
+    - name: Test 2
+      env:
+        TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
+        TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        TEXT='NOTICE: TEST 2, Resources Added'
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |
