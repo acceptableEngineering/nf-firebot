@@ -11,6 +11,7 @@ import logging
 import os
 import sys
 import json
+import geopy.distance
 import json_log_formatter
 import requests
 import tinydb
@@ -315,8 +316,13 @@ def generate_notif_body(inci_dict, priority_str):
 
         notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
             str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
-            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', -' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
             str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+
+    nearby_cameras = nearby_cameras_url(inci_dict)
+
+    if nearby_cameras:
+        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
@@ -343,7 +349,7 @@ def create_gmaps_url(inci_dict):
     Returns a Google Maps URL for given X/Y coordinates
     """
     return '<a href="https://www.google.com/maps/search/' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
         str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X">Google</a>'
 
 # ------------------------------------------------------------------------------
@@ -353,7 +359,7 @@ def create_applemaps_url(inci_dict):
     Returns a Google Maps URL for given X/Y coordinates
     """
     return '<a href="http://maps.apple.com/?ll=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + ',-' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
         str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'] + '">Apple</a>'
 
 # ------------------------------------------------------------------------------
@@ -363,7 +369,7 @@ def create_adsbex_url(inci_dict):
     Returns an ADSB Exchange URL for given X/Y coordinates
     """
     return '<a href="https://globe.adsbexchange.com/?lat=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=-' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=' + \
         str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id'] + \
             '">ADS-B Ex.</a>'
 
@@ -374,7 +380,7 @@ def create_waze_url(inci_dict):
     Returns a Waze URL for given X/Y coordinates
     """
     return '<a href="https://www.waze.com/ul?ll=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + '%2C-' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '%2C' + \
         str(convert_gps_to_decimal(inci_dict['y'])) + '">Waze</a>'
 
 # ------------------------------------------------------------------------------
@@ -458,9 +464,14 @@ def convert_gps_to_decimal(input_int):
 
     # --------------------------------------------------------------------------
 
-    input_int = format_geo(input_int)
+    input_int_formatted = format_geo(input_int)
 
-    return round(decimal_degrees(*conv_dm(float(input_int))), 4)
+    formula = round(decimal_degrees(*conv_dm(float(input_int_formatted))), 4)
+
+    if int(input_int.split(' ')[0]) < 0:
+        return -formula
+
+    return formula
 
 # ------------------------------------------------------------------------------
 
@@ -527,6 +538,11 @@ def process_alerts(inci_list):
                         empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', -' + \
                         str(convert_gps_to_decimal(inci['y']))) + '</em>'
 
+                    nearby_cameras = nearby_cameras_url(inci)
+
+                    if nearby_cameras:
+                        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams))</a>'
+
                 telegram(notif_body, 'low')
             else:
                 logger.debug('%s unchanged', inci['id'])
@@ -568,6 +584,47 @@ def process_daily_recap():
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
             telegram(notif_body, 'low')
+
+# ------------------------------------------------------------------------------
+
+def nearby_cameras_url(inci_dict):
+    """
+    When given a dict with lat/long ('x','y') determines if there are any
+    wildfire cameras within 15 miles, and returns a URL showing any matches
+    """
+    if os.path.exists('./extras/alertwildfire_processed.json') is False:
+        logger.error('No webcam manifest exists, skipping identify_nearby_cameras()')
+        return False
+
+    camera_url = 'https://www.alertwildfire.org/tile-display/viewer/'
+    match_count = 0
+
+    with open('./extras/alertwildfire_processed.json', encoding='utf8') as camera_json:
+        for camera in json.load(camera_json)['cameras']:
+            this_coords = (camera['lat'],camera['lon'])
+            this_distance = geopy.distance.geodesic(
+                (convert_gps_to_decimal(inci_dict['x']),convert_gps_to_decimal(inci_dict['y'])),
+                this_coords
+            ).mi
+
+            if this_distance < 15:
+                match_count += 1
+                camera['distance'] = this_distance
+
+                if match_count == 1:
+                    prefix = '?'
+                else:
+                    prefix = '&'
+
+                camera_url += prefix + 'cams=' + camera['id']
+
+        if match_count > 0:
+            return {
+                "url": camera_url,
+                "count": str(match_count)
+            }
+
+    return False
 
 # ------------------------------------------------------------------------------
 
