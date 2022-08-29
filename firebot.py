@@ -535,13 +535,13 @@ def process_alerts(inci_list):
 
                     notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci['x']) + ', ' + \
                         str(inci['y'])) + '\n   Lat/Long (DD):    ' + \
-                        empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', -' + \
+                        empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', ' + \
                         str(convert_gps_to_decimal(inci['y']))) + '</em>'
 
                     nearby_cameras = nearby_cameras_url(inci)
 
                     if nearby_cameras:
-                        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams))</a>'
+                        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
                 telegram(notif_body, 'low')
             else:
