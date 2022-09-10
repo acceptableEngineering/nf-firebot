@@ -17,7 +17,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint requests tinydb python-dotenv lxml json_log_formatter geopy
+        pip install pylint requests tinydb python-dotenv lxml json_log_formatter geopy twilio uvicorn
     - name: Create dummy .env file
       run: |
         cat <<EOT > .env
@@ -35,13 +35,25 @@ jobs:
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TWILIO_SID: ${{ secrets.TWILIO_SID }}
+        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+        TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
       run: |
         cat <<EOT > .env
         NF_IDENTIFIER=${NF_IDENTIFIER}
         TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
         TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+        TWILIO_SID=${TWILIO_SID}
+        TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+        TWILIO_NUMBER=${TWILIO_NUMBER}
         EOT
+    - name: Setup Faux Contacts DB
+      env:
+        TEST_PHONE_NUMBER: ${{ secrets.TEST_PHONE_NUMBER }}
+      run: |
+        cp ./.development/db_contacts.json.tpl ./db_contacts.json
+        sed -i "s/REPLACE_ME/${TEST_PHONE_NUMBER}/g" ./db_contacts.json
 
     - name: Remove last entry
       run: |
@@ -85,7 +97,7 @@ jobs:
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        TEXT='NOTICE: TEST 2, Resources Added'
+        TEXT='NOTICE: TEST 3, Resources Added'
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |

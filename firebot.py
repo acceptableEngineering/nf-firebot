@@ -1,9 +1,11 @@
 """
-N.F.-FireBot
-(National Forest FireBot)
+N.F.-FireBot (National Forest FireBot)
+https://github.com/acceptableEngineering/nf-firebot
 
-A Python script that scrapes WildWeb for US National Forest fire-related data,
-and reports them to a given Telegram channel
+./firebot.py
+
+Scrapes WildWeb for US National Forest fire-related data, and reports them to a
+given Telegram channel
 """
 import urllib.parse
 import datetime
@@ -15,6 +17,7 @@ import geopy.distance
 import json_log_formatter
 import requests
 import tinydb
+from twilio.rest import Client
 from dotenv import dotenv_values
 from lxml import html
 
@@ -35,6 +38,7 @@ logger.setLevel(logging.ERROR)
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
 db = tinydb.TinyDB(exec_path + '/db.json')
+db_contacts = tinydb.TinyDB(exec_path + '/db_contacts.json')
 
 secrets = dotenv_values(".env")
 
@@ -79,7 +83,37 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def telegram(message_str, priority_str):
+def send_sms(message_str):
+    """
+    Output: SMS all numbers found in self-service DB, via Twilio
+    """
+
+    if(
+        'TWILIO_SID' not in secrets
+        or 'TWILIO_AUTH_TOKEN' not in secrets
+        or 'TWILIO_NUMBER' not in secrets
+    ):
+        logger.error('A required var is not set in .env! Cannot send Telegram message')
+        return False
+
+    recipients = db_contacts.search(tinydb.Query().alert_level == 'all')
+
+    for recipient in recipients:
+        client = Client(secrets['TWILIO_SID'], secrets['TWILIO_AUTH_TOKEN'])
+
+        message = client.messages.create(
+            body = message_str,
+            from_ = secrets['TWILIO_NUMBER'],
+            to = recipient['number']
+        )
+
+        logger.debug('Twilio SMS send: %s', message.sid)
+
+    return True
+
+# ------------------------------------------------------------------------------
+
+def send_telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
@@ -96,8 +130,7 @@ def telegram(message_str, priority_str):
     if priority_str == 'low':
         url = url + '&disable_notification=true'
 
-    if DEBUG is True:
-        logger.debug('Telegram URL: %s', url)
+    logger.debug('Telegram URL: %s', url)
 
     if('False' in [
         secrets['TELEGRAM_BOT_ID'],
@@ -280,7 +313,7 @@ def process_major_alerts():
 
             this_notif_body = generate_notif_body(inci, 'major')
 
-            if telegram(this_notif_body, 'major'):
+            if send_telegram(this_notif_body, 'major'):
                 logger.debug('Adding flags.major_sent flag')
                 inci['major_sent'] = True
                 db.update(inci, inci_db.id == inci['id'])
@@ -289,14 +322,138 @@ def process_major_alerts():
 
 # ------------------------------------------------------------------------------
 
+def generate_plain_initial_notif_body(inci_dict):
+    """
+    Returns a string usually passed into send_sms() with a prepared message
+    """
+    notif_body = 'ANF Poss. Fire:' + \
+                '\nID: ' + empty_fill(inci_dict['id']) + \
+                '\nName: ' + empty_fill(inci_dict['name']) + \
+                '\nType: ' + empty_fill(inci_dict['type']) + \
+                '\nCreated: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
+                '\nComment: ' + empty_fill(inci_dict['comment']) + \
+                '\nAcres: ' + empty_fill(inci_dict['acres']) + \
+                '\nResources: ' + empty_fill(inci_dict['resources']) + \
+                '\nLocation: ' + empty_fill(inci_dict['location'])
+
+    if 'x' in inci_dict and 'y' in inci_dict:
+        notif_body += '\nLocation Resources: ' + \
+            '\n- Google: ' + create_gmaps_url(inci_dict, False) + \
+            '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
+            '\n- Waze: ' + create_waze_url(inci_dict, False) + \
+            '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
+
+        notif_body += '\n- Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '\n- Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['y'])))
+
+    nearby_cameras = nearby_cameras_url(inci_dict)
+
+    if nearby_cameras:
+        notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
+            '): ' + nearby_cameras['url']
+
+    return notif_body
+
+# ------------------------------------------------------------------------------
+
+def generate_plain_diff_body(inci_dict, event_changes):
+    """
+    Generates an incident change notification, plaintext version
+    """
+    send_maps_link = False
+
+    notif_body = 'Dispatch changed ' + inci_dict['id'] + '\n\n'
+
+    for change in event_changes:
+        notif_body += change['name'].upper() + '\n'
+        notif_body += '- Old: ' + change['old'] + '\n'
+        notif_body += '- New: ' + change['new'] + '\n'
+        notif_body += '--------\n'
+
+        if change['name'] == 'x' or change['name'] == 'y':
+            send_maps_link = True
+
+    if send_maps_link is True:
+        notif_body += '\nLocation Resources: ' + \
+            '\n- Google: ' + create_gmaps_url(inci_dict, False) + \
+            '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
+            '\n- Waze: ' + create_waze_url(inci_dict, False) + \
+            '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
+
+        notif_body += '\n- Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '\n- Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['y'])))
+
+        nearby_cameras = nearby_cameras_url(inci_dict)
+
+        if nearby_cameras:
+            notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
+                '): ' + nearby_cameras['url']
+
+    return notif_body
+
+# ------------------------------------------------------------------------------
+
+def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
+    """
+    Generates an incident change notification, nice HTML version
+    """
+    send_maps_link = False
+
+    if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
+        if '@' in secrets['TELEGRAM_CHAT_ID']:
+            telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID'].replace('@', '')
+        else:
+            telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID']
+        notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
+            telegram_chat_id_stripped + '/' + \
+            str(inci_db_entry[0]['original_message_id']) + '">' + \
+            inci_dict['id'] + '</a></b>'
+    else:
+        notif_body = 'Dispatch changed <b>' + inci_dict['id'] + '</b>'
+
+    for change in event_changes:
+        if change['name'] == 'resources':
+            notif_body += '\n' + granular_diff_list(inci_dict, inci_db_entry)
+        else:
+            notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
+            '<s>' + change['old'] + '</s> ' + change['new']
+
+        if change['name'] == 'x' or change['name'] == 'y':
+            send_maps_link = True
+
+    if send_maps_link is True:
+        notif_body += '\nLocation Resources: ' + \
+            '\n   <em>Maps: ' + create_gmaps_url(inci_dict)  + ' - ' + \
+            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict) + \
+            ' - ' + create_adsbex_url(inci_dict)
+
+        notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+
+        nearby_cameras = nearby_cameras_url(inci_dict)
+
+        if nearby_cameras:
+            notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
+                'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+
+    return notif_body
+
+# ------------------------------------------------------------------------------
+
 def generate_notif_body(inci_dict, priority_str):
     """
-    Returns a string usually passed into telegram() with a prepared message
+    Returns a string usually passed into send_telegram() with a prepared message
     """
     notify_title = 'New Possible Fire Incident'
 
     if priority_str == 'special':
-        notify_title = 'New MAJOR Fire'
+        notify_title = 'New Possible MAJOR Fire'
 
     notif_body = '<b>' + notify_title + '</b>' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
@@ -322,7 +479,8 @@ def generate_notif_body(inci_dict, priority_str):
     nearby_cameras = nearby_cameras_url(inci_dict)
 
     if nearby_cameras:
-        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
+            'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
@@ -344,44 +502,63 @@ def uppercase_first(input_str):
 
 # ------------------------------------------------------------------------------
 
-def create_gmaps_url(inci_dict):
+def create_gmaps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    return '<a href="https://www.google.com/maps/search/' + \
+    url = 'https://www.google.com/maps/search/' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X">Google</a>'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X'
+
+    if rich_bool:
+        return '<a href="' + url + '">Google</a>'
+
+    return url
 
 # ------------------------------------------------------------------------------
 
-def create_applemaps_url(inci_dict):
+def create_applemaps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    return '<a href="http://maps.apple.com/?ll=' + \
+    url = 'http://maps.apple.com/?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'] + '">Apple</a>'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id']
+
+    if rich_bool:
+        return '<a href="' + url + '">Apple</a>'
+
+    return url
 
 # ------------------------------------------------------------------------------
 
-def create_adsbex_url(inci_dict):
+def create_adsbex_url(inci_dict, rich_bool =False):
     """
     Returns an ADSB Exchange URL for given X/Y coordinates
     """
-    return '<a href="https://globe.adsbexchange.com/?lat=' + \
+    url = 'https://globe.adsbexchange.com/?lat=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id'] + \
-            '">ADS-B Ex.</a>'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id']
+
+    if rich_bool:
+        return '<a href="' + url + '">ADS-B Ex.</a>'
+
+    return url
 
 # ------------------------------------------------------------------------------
 
-def create_waze_url(inci_dict):
+def create_waze_url(inci_dict, rich_bool =False):
     """
     Returns a Waze URL for given X/Y coordinates
     """
-    return '<a href="https://www.waze.com/ul?ll=' + \
+    url = 'https://www.waze.com/ul?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '%2C' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '">Waze</a>'
+        str(convert_gps_to_decimal(inci_dict['y']))
+
+    if rich_bool:
+        return '<a href="' + url + '">Waze</a>'
+
+    return url
 
 # ------------------------------------------------------------------------------
 
@@ -497,7 +674,6 @@ def process_alerts(inci_list):
 
             if event_changes:
                 logger.debug('%s has changed', inci['id'])
-                send_maps_link = False
 
                 # Event changed from type 'Wildfire'. Delete from DB
                 if is_fire(inci) is False:
@@ -505,59 +681,23 @@ def process_alerts(inci_list):
                 else:
                     db.update(inci, inci_db.id == inci['id'])
 
-                if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
-                    if '@' in secrets['TELEGRAM_CHAT_ID']:
-                        telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID'].replace('@', '')
-                    else:
-                        telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID']
-                    notif_body = 'Dispatch changed <b><a href="https://t.me/' + \
-                        telegram_chat_id_stripped + '/' + \
-                        str(inci_db_entry[0]['original_message_id']) + '">' + \
-                        inci['id'] + '</a></b>'
-                else:
-                    notif_body = 'Dispatch changed <b>' + inci['id'] + '</b>'
-
-                for change in event_changes:
-                    if change['name'] == 'resources':
-                        notif_body += '\n' + granular_diff_list(inci, inci_db_entry)
-                    else:
-                        notif_body += '\n' + uppercase_first(change['name']) + ': ' + \
-                        '<s>' + change['old'] + '</s> ' + change['new']
-
-                    if change['name'] == 'x' or change['name'] == 'y':
-                        send_maps_link = True
-
-                if send_maps_link is True:
-                    notif_body += '\nLocation Resources: ' + \
-                        '\n   <em>Maps: ' + create_gmaps_url(inci)  + ' - ' + \
-                        create_applemaps_url(inci) + ' - ' + create_waze_url(inci) + \
-                        ' - ' + create_adsbex_url(inci)
-
-                    notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci['x']) + ', ' + \
-                        str(inci['y'])) + '\n   Lat/Long (DD):    ' + \
-                        empty_fill(str(convert_gps_to_decimal(inci['x'])) + ', ' + \
-                        str(convert_gps_to_decimal(inci['y']))) + '</em>'
-
-                    nearby_cameras = nearby_cameras_url(inci)
-
-                    if nearby_cameras:
-                        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em> Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
-
-                telegram(notif_body, 'low')
+                send_telegram(generate_rich_diff_body(inci, inci_db_entry, event_changes), 'low')
+                send_sms(generate_plain_diff_body(inci, event_changes))
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
             if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
                 db.insert(inci)
-
-                telegram_json = telegram(generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = send_telegram(generate_notif_body(inci, 'normal'), 'high')
 
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
                     telegram_json = json.loads(telegram_json.content)
                     inci['original_message_id'] = telegram_json['result']['message_id']
                     db.update(inci, inci_db.id == inci['id'])
+
+                send_sms(generate_plain_initial_notif_body(inci))
 
     return True
 
@@ -583,7 +723,7 @@ def process_daily_recap():
                 notif_body = notif_body + 'Today there were <b>' + str(len(results)) + \
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
-            telegram(notif_body, 'low')
+            send_telegram(notif_body, 'low')
 
 # ------------------------------------------------------------------------------
 
