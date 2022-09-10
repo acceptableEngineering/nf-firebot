@@ -110,7 +110,10 @@ async def app(scope, receive, send):
     elif scope['path'].strip() == '/ping':
         command_response = True
     else:
-        command_response = 'Invalid API method: ' + scope["path"]
+        command_response = {
+            "code": 400,
+            "body": 'Invalid API method: ' + scope["path"]
+        }
 
     server_response = process_response(command_response)
 
