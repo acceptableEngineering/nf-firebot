@@ -35,13 +35,25 @@ jobs:
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        TWILIO_SID: ${{ secrets.TWILIO_SID }}
+        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+        TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
       run: |
         cat <<EOT > .env
         NF_IDENTIFIER=${NF_IDENTIFIER}
         TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
         TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+        TWILIO_SID=${TWILIO_SID}
+        TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+        TWILIO_NUMBER=${TWILIO_NUMBER}
         EOT
+    - name: Setup Faux Contacts DB
+      env:
+        TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
+      run: |
+        cp ./development/db_contacts.json.tpl ./db_contacts.json
+        sed -i 's/REPLACE_ME/${TWILIO_NUMBER}/g' ./db_contacts.json
 
     - name: Remove last entry
       run: |
