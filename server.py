@@ -12,7 +12,7 @@ import os
 import tinydb
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
-db = tinydb.TinyDB(exec_path + '/contact_db.json')
+db = tinydb.TinyDB(exec_path + '/db_contacts.json')
 
 # ------------------------------------------------------------------------------
 
@@ -101,7 +101,9 @@ async def app(scope, receive, send):
     assert scope['type'] == 'http'
 
     body = await read_body(receive)
-    body = json.loads(body)
+    
+    if body:
+        body = json.loads(body)
 
     if scope['path'].strip() == '/add':
         command_response = add_to_db(body)
