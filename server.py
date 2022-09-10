@@ -33,7 +33,10 @@ def add_to_db(body):
 
         return True
 
-    return 'you are already subscribed'
+    return {
+        "code": 400,
+        "body": "you are already subscribed"
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -52,7 +55,10 @@ def remove_from_db(body):
 
         return True
 
-    return 'you aren\'t subscribed'
+    return {
+        "code": 400,
+        "body": "you aren't subscribed"
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -67,8 +73,8 @@ def process_response(command_response):
         }
 
     return {
-        "code": 500,
-        "body": str(command_response)
+        "code": command_response['code'],
+        "body": str(command_response['body'])
     }
 
 # ------------------------------------------------------------------------------
@@ -101,6 +107,8 @@ async def app(scope, receive, send):
         command_response = add_to_db(body)
     elif scope['path'].strip() == '/remove':
         command_response = remove_from_db(body)
+    elif scope['path'].strip() == '/ping':
+        command_response = True
     else:
         command_response = 'Invalid API method: ' + scope["path"]
 
