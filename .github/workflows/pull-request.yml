@@ -50,10 +50,10 @@ jobs:
         EOT
     - name: Setup Faux Contacts DB
       env:
-        TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
+        TEST_PHONE_NUMBER: ${{ secrets.TEST_PHONE_NUMBER }}
       run: |
         cp ./.development/db_contacts.json.tpl ./db_contacts.json
-        sed -i 's/REPLACE_ME/${TWILIO_NUMBER}/g' ./db_contacts.json
+        sed -i 's/REPLACE_ME/${TEST_PHONE_NUMBER}/g' ./db_contacts.json
 
     - name: Remove last entry
       run: |
