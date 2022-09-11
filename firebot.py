@@ -13,9 +13,9 @@ import logging
 import os
 import sys
 import json
+import re
 import geopy.distance
 import json_log_formatter
-import re
 import requests
 import tinydb
 from twilio.rest import Client
@@ -776,15 +776,15 @@ def shorten_url(url_str):
     very own logic and domain name
     """
 
-    if 'URL_SHORT_DOMAIN' not in secrets:
-        logger.debug('URL_SHORT_DOMAIN not defined in secrets. Skipping')
+    if 'URL_SHORT' not in secrets:
+        logger.debug('URL_SHORT not defined in secrets. Skipping')
         return url_str
 
     # --------------------------------------------------------------------------
 
-    def find_new_id(url_str, start =False):
+    def find_new_id(start =False):
         new_id_found = False
-        
+
         if start is False:
             letter_start = 0
             number_start = 0
@@ -792,22 +792,22 @@ def shorten_url(url_str):
             split_id = re.findall(r'[A-Za-z]+|\d+', start['id'])
             letter_start = int(ord(split_id[0])) - 97 # A-Z starts at 97
             number_start = int(split_id[1])
-        
+
         while new_id_found is False:
             this_combo = chr(ord('a') + letter_start) + str(number_start)
             this_db_check = db_urls.search(tinydb.Query().id == this_combo)
 
             if len(this_db_check) == 0:
                 return this_combo
-            
+
             if number_start == 999: # EG: a99 = roll over to b0
                 letter_start += 1
-                number_start = 0                
+                number_start = 0
             else:
                 number_start += 1
 
     # --------------------------------------------------------------------------
-    
+
     db_results = db_urls.search(tinydb.Query().url == url_str)
     db_result_last = db_urls.all()
 
@@ -815,16 +815,16 @@ def shorten_url(url_str):
         short_url_result = db_results[0]['id']
     else:
         if len(db_result_last) > 0: # DB has content, use last item as springboard
-            short_url_result = find_new_id(url_str, db_result_last[-1])
+            short_url_result = find_new_id(db_result_last[-1])
         else:
-            short_url_result = find_new_id(url_str, False)
+            short_url_result = find_new_id(False)
 
         db_urls.insert({
             "url": url_str,
             "id": short_url_result
         })
 
-    return 'https://lm7.us/' + short_url_result
+    return secrets['URL_SHORT'] + '/' + short_url_result
 
 # ------------------------------------------------------------------------------
 
