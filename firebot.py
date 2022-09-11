@@ -13,6 +13,7 @@ import logging
 import os
 import sys
 import json
+import re
 import geopy.distance
 import json_log_formatter
 import requests
@@ -39,6 +40,7 @@ logger.setLevel(logging.ERROR)
 exec_path = os.path.dirname(os.path.realpath(__file__))
 db = tinydb.TinyDB(exec_path + '/db.json')
 db_contacts = tinydb.TinyDB(exec_path + '/db_contacts.json')
+db_urls = tinydb.TinyDB(exec_path + '/db_urls.json')
 
 secrets = dotenv_values(".env")
 
@@ -338,7 +340,7 @@ def generate_plain_initial_notif_body(inci_dict):
 
     if 'x' in inci_dict and 'y' in inci_dict:
         notif_body += '\nLocation Resources: ' + \
-            '\n- Google: ' + create_gmaps_url(inci_dict, False) + \
+            '\n- Google: ' + create_google_maps_url(inci_dict, False) + \
             '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
             '\n- Waze: ' + create_waze_url(inci_dict, False) + \
             '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
@@ -377,7 +379,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
 
     if send_maps_link is True:
         notif_body += '\nLocation Resources: ' + \
-            '\n- Google: ' + create_gmaps_url(inci_dict, False) + \
+            '\n- Google: ' + create_google_maps_url(inci_dict, False) + \
             '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
             '\n- Waze: ' + create_waze_url(inci_dict, False) + \
             '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
@@ -427,9 +429,9 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
 
     if send_maps_link is True:
         notif_body += '\nLocation Resources: ' + \
-            '\n   <em>Maps: ' + create_gmaps_url(inci_dict)  + ' - ' + \
-            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict) + \
-            ' - ' + create_adsbex_url(inci_dict)
+            '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True)  + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
 
         notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
             str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
@@ -467,9 +469,9 @@ def generate_notif_body(inci_dict, priority_str):
 
     if 'x' in inci_dict and 'y' in inci_dict:
         notif_body += '\nLocation Resources: ' + \
-            '\n   <em>Maps: ' + create_gmaps_url(inci_dict) + ' - ' + \
-            create_applemaps_url(inci_dict) + ' - ' + create_waze_url(inci_dict) + \
-            ' - ' + create_adsbex_url(inci_dict)
+            '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True) + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
 
         notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
             str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
@@ -502,13 +504,13 @@ def uppercase_first(input_str):
 
 # ------------------------------------------------------------------------------
 
-def create_gmaps_url(inci_dict, rich_bool =False):
+def create_google_maps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    url = 'https://www.google.com/maps/search/' + \
+    url = shorten_url('https://www.google.com/maps/search/' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X'
+        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X')
 
     if rich_bool:
         return '<a href="' + url + '">Google</a>'
@@ -521,9 +523,9 @@ def create_applemaps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    url = 'http://maps.apple.com/?ll=' + \
+    url = shorten_url('http://maps.apple.com/?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id']
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'])
 
     if rich_bool:
         return '<a href="' + url + '">Apple</a>'
@@ -536,9 +538,9 @@ def create_adsbex_url(inci_dict, rich_bool =False):
     """
     Returns an ADSB Exchange URL for given X/Y coordinates
     """
-    url = 'https://globe.adsbexchange.com/?lat=' + \
+    url = shorten_url('https://globe.adsbexchange.com/?lat=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id']
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id'])
 
     if rich_bool:
         return '<a href="' + url + '">ADS-B Ex.</a>'
@@ -551,9 +553,9 @@ def create_waze_url(inci_dict, rich_bool =False):
     """
     Returns a Waze URL for given X/Y coordinates
     """
-    url = 'https://www.waze.com/ul?ll=' + \
+    url = shorten_url('https://www.waze.com/ul?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '%2C' + \
-        str(convert_gps_to_decimal(inci_dict['y']))
+        str(convert_gps_to_decimal(inci_dict['y'])))
 
     if rich_bool:
         return '<a href="' + url + '">Waze</a>'
@@ -760,11 +762,69 @@ def nearby_cameras_url(inci_dict):
 
         if match_count > 0:
             return {
-                "url": camera_url,
+                "url": shorten_url(camera_url),
                 "count": str(match_count)
             }
 
     return False
+
+# ------------------------------------------------------------------------------
+
+def shorten_url(url_str):
+    """
+    Accepts a full URL with protocol prefix and all, and shortens it with our
+    very own logic and domain name
+    """
+
+    if 'URL_SHORT' not in secrets:
+        logger.debug('URL_SHORT not defined in secrets. Skipping')
+        return url_str
+
+    # --------------------------------------------------------------------------
+
+    def find_new_id(start =False):
+        new_id_found = False
+
+        if start is False:
+            letter_start = 0
+            number_start = 0
+        else:
+            split_id = re.findall(r'[A-Za-z]+|\d+', start['id'])
+            letter_start = int(ord(split_id[0])) - 97 # A-Z starts at 97
+            number_start = int(split_id[1])
+
+        while new_id_found is False:
+            this_combo = chr(ord('a') + letter_start) + str(number_start)
+            this_db_check = db_urls.search(tinydb.Query().id == this_combo)
+
+            if len(this_db_check) == 0:
+                return this_combo
+
+            if number_start == 999: # EG: a99 = roll over to b0
+                letter_start += 1
+                number_start = 0
+            else:
+                number_start += 1
+
+    # --------------------------------------------------------------------------
+
+    db_results = db_urls.search(tinydb.Query().url == url_str)
+    db_result_last = db_urls.all()
+
+    if db_results: # This URL already exists in DB
+        short_url_result = db_results[0]['id']
+    else:
+        if len(db_result_last) > 0: # DB has content, use last item as springboard
+            short_url_result = find_new_id(db_result_last[-1])
+        else:
+            short_url_result = find_new_id(False)
+
+        db_urls.insert({
+            "url": url_str,
+            "id": short_url_result
+        })
+
+    return secrets['URL_SHORT'] + '/' + short_url_result
 
 # ------------------------------------------------------------------------------
 

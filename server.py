@@ -13,6 +13,7 @@ import tinydb
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
 db = tinydb.TinyDB(exec_path + '/db_contacts.json')
+db_urls = tinydb.TinyDB(exec_path + '/db_urls.json')
 
 # ------------------------------------------------------------------------------
 
@@ -101,10 +102,15 @@ async def app(scope, receive, send):
     assert scope['type'] == 'http'
 
     body = await read_body(receive)
-    
+
     if body:
         body = json.loads(body)
 
+    if scope['path'].strip() == '':
+        command_response = {
+            "code": 400,
+            "body": 'Invalid URL'
+        }
     if scope['path'].strip() == '/add':
         command_response = add_to_db(body)
     elif scope['path'].strip() == '/remove':
@@ -112,24 +118,43 @@ async def app(scope, receive, send):
     elif scope['path'].strip() == '/ping':
         command_response = True
     else:
-        command_response = {
-            "code": 400,
-            "body": 'Invalid API method: ' + scope["path"]
-        }
+        request_url_strip = scope['path'].split('/')
+        this_db_check = db_urls.search(tinydb.Query().id == request_url_strip[1].strip())
+        if len(this_db_check) > 0:
+            await send({
+                'type': 'http.response.start',
+                'status': 302,
+                'headers': [
+                    [b'Location', this_db_check[0]['url']],
+                ]
+            })
+            this_body = '<head><meta http-equiv="Refresh" content="0; URL=' + \
+                this_db_check[0]['url'] + '"></head>'
+            await send({
+                'type': 'http.response.body',
+                'body': this_body.encode('utf-8')
+            })
+            command_response = False
+        else:
+            command_response = {
+                "code": 400,
+                "body": 'Path not found'
+            }
 
-    server_response = process_response(command_response)
+    if command_response is not False:
+        server_response = process_response(command_response)
 
-    await send({
-        'type': 'http.response.start',
-        'status': server_response['code'],
-        'headers': [
-            [b'content-type', b'text/plain'],
-        ]
-    })
+        await send({
+            'type': 'http.response.start',
+            'status': server_response['code'],
+            'headers': [
+                [b'content-type', b'text/plain'],
+            ]
+        })
 
-    await send({
-        'type': 'http.response.body',
-        'body': server_response['body'].encode('utf-8')
-    })
+        await send({
+            'type': 'http.response.body',
+            'body': server_response['body'].encode('utf-8')
+        })
 
 # ------------------------------------------------------------------------------

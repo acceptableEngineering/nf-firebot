@@ -38,6 +38,7 @@ jobs:
         TWILIO_SID: ${{ secrets.TWILIO_SID }}
         TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
         TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
+        URL_SHORT: ${{ secrets.URL_SHORT }}
       run: |
         cat <<EOT > .env
         NF_IDENTIFIER=${NF_IDENTIFIER}
@@ -47,6 +48,7 @@ jobs:
         TWILIO_SID=${TWILIO_SID}
         TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
         TWILIO_NUMBER=${TWILIO_NUMBER}
+        URL_SHORT=${URL_SHORT}
         EOT
     - name: Setup Faux Contacts DB
       env:
