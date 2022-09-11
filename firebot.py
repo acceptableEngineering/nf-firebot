@@ -354,7 +354,7 @@ def generate_plain_initial_notif_body(inci_dict):
 
     if nearby_cameras:
         notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
-            '): ' + nearby_cameras['url']
+            '): ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
@@ -393,7 +393,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
 
         if nearby_cameras:
             notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
-                '): ' + nearby_cameras['url']
+                '): ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
@@ -508,14 +508,14 @@ def create_google_maps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    url = shorten_url('https://www.google.com/maps/search/' + \
+    url = 'https://www.google.com/maps/search/' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X')
+        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X'
 
     if rich_bool:
         return '<a href="' + url + '">Google</a>'
 
-    return url
+    return shorten_url(url)
 
 # ------------------------------------------------------------------------------
 
@@ -523,14 +523,14 @@ def create_applemaps_url(inci_dict, rich_bool =False):
     """
     Returns a Google Maps URL for given X/Y coordinates
     """
-    url = shorten_url('http://maps.apple.com/?ll=' + \
+    url = 'http://maps.apple.com/?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id'])
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id']
 
     if rich_bool:
         return '<a href="' + url + '">Apple</a>'
 
-    return url
+    return shorten_url(url)
 
 # ------------------------------------------------------------------------------
 
@@ -538,14 +538,14 @@ def create_adsbex_url(inci_dict, rich_bool =False):
     """
     Returns an ADSB Exchange URL for given X/Y coordinates
     """
-    url = shorten_url('https://globe.adsbexchange.com/?lat=' + \
+    url = 'https://globe.adsbexchange.com/?lat=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id'])
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id']
 
     if rich_bool:
         return '<a href="' + url + '">ADS-B Ex.</a>'
 
-    return url
+    return shorten_url(url)
 
 # ------------------------------------------------------------------------------
 
@@ -553,14 +553,14 @@ def create_waze_url(inci_dict, rich_bool =False):
     """
     Returns a Waze URL for given X/Y coordinates
     """
-    url = shorten_url('https://www.waze.com/ul?ll=' + \
+    url = 'https://www.waze.com/ul?ll=' + \
         str(convert_gps_to_decimal(inci_dict['x'])) + '%2C' + \
-        str(convert_gps_to_decimal(inci_dict['y'])))
+        str(convert_gps_to_decimal(inci_dict['y']))
 
     if rich_bool:
         return '<a href="' + url + '">Waze</a>'
 
-    return url
+    return shorten_url(url)
 
 # ------------------------------------------------------------------------------
 
@@ -762,7 +762,7 @@ def nearby_cameras_url(inci_dict):
 
         if match_count > 0:
             return {
-                "url": shorten_url(camera_url),
+                "url": camera_url,
                 "count": str(match_count)
             }
 
