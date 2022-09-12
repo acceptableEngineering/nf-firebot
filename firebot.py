@@ -339,22 +339,21 @@ def generate_plain_initial_notif_body(inci_dict):
                 '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += '\nLocation Resources: ' + \
+        notif_body += '\nTools:' + \
             '\n- Google: ' + create_google_maps_url(inci_dict, False) + \
             '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
             '\n- Waze: ' + create_waze_url(inci_dict, False) + \
-            '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
+            '\n- ADS-B: ' + create_adsbex_url(inci_dict, False)
 
-        notif_body += '\n- Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
-            str(inci_dict['y'])) + '\n- Lat/Long (DD):    ' + \
-            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+        notif_body += '\n- LL, DDM: ' + empty_fill(str(inci_dict['x']) + ',' + \
+            str(inci_dict['y'])) + '\n- LL, DD: ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
             str(convert_gps_to_decimal(inci_dict['y'])))
 
     nearby_cameras = nearby_cameras_url(inci_dict)
 
     if nearby_cameras:
-        notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
-            '): ' + shorten_url(nearby_cameras['url'])
+        notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
@@ -366,19 +365,19 @@ def generate_plain_diff_body(inci_dict, event_changes):
     """
     send_maps_link = False
 
-    notif_body = 'Dispatch changed ' + inci_dict['id'] + '\n\n'
+    notif_body = inci_dict['id'] + ' Changed:\n'
 
     for change in event_changes:
+        notif_body += '--\n'
         notif_body += change['name'].upper() + '\n'
-        notif_body += '- Old: ' + change['old'] + '\n'
-        notif_body += '- New: ' + change['new'] + '\n'
-        notif_body += '--------\n'
+        notif_body += 'Old: ' + change['old'] + '\n'
+        notif_body += 'New: ' + change['new'] + '\n'
 
         if change['name'] == 'x' or change['name'] == 'y':
             send_maps_link = True
 
     if send_maps_link is True:
-        notif_body += '\nLocation Resources: ' + \
+        notif_body += '\nTools (Revised):' + \
             '\n- Google: ' + create_google_maps_url(inci_dict, False) + \
             '\n- Apple: ' + create_applemaps_url(inci_dict, False) + \
             '\n- Waze: ' + create_waze_url(inci_dict, False) + \
@@ -392,8 +391,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n- ALERT Wildfire Cams within 15 mi. (' + nearby_cameras['count'] + \
-                '): ' + shorten_url(nearby_cameras['url'])
+            notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
