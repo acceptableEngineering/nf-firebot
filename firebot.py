@@ -426,7 +426,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
             send_maps_link = True
 
     if send_maps_link is True:
-        notif_body += '\nLocation Resources: ' + \
+        notif_body += '\nTools:' + \
             '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True)  + ' - ' + \
             create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
             ' - ' + create_adsbex_url(inci_dict, True)
@@ -466,7 +466,7 @@ def generate_notif_body(inci_dict, priority_str):
                 '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += '\nLocation Resources: ' + \
+        notif_body += '\nTools:' + \
             '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True) + ' - ' + \
             create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
             ' - ' + create_adsbex_url(inci_dict, True)
