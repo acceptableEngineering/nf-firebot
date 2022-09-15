@@ -98,32 +98,34 @@ def send_email(message_str):
 
     recipients = db_contacts.search(tinydb.Query().email != '')
 
-    recipients_list = []
+    if recipients.len() > 0:
 
-    for recipient in recipients:
-        recipients_list.append({"email": recipient})
+        recipients_list = []
 
-    send_data = {
-        "from": {"email": secrets['SENDGRID_FROM']},
-        "personalizations": [{
-            "to": [
-                recipients_list
-            ]
-        }],
-        "subject": "Hello",
-        "content": [{"type": "text/plain", "value": "ANF Notif"}]
-    }
+        for recipient in recipients:
+            recipients_list.append({"email": recipient['email']})
 
-    return requests.post(
-        'https://api.sendgrid.com/v3/mail/send',
-        timeout=10,
-        allow_redirects=False,
-        headers={
-            "Content-Type":"application/json",
-            "Authorization": "Bearer " + secrets['SENDGRID_TOKEN']
-        },
-        json = send_data
-    ).content
+        send_data = {
+            "from": {"email": secrets['SENDGRID_FROM']},
+            "personalizations": [{
+                "to": [
+                    recipients_list
+                ]
+            }],
+            "subject": "Hello",
+            "content": [{"type": "text/plain", "value": "ANF Notif"}]
+        }
+
+        return requests.post(
+            'https://api.sendgrid.com/v3/mail/send',
+            timeout=10,
+            allow_redirects=False,
+            headers={
+                "Content-Type":"application/json",
+                "Authorization": "Bearer " + secrets['SENDGRID_TOKEN']
+            },
+            json = send_data
+        ).content
 
 # ------------------------------------------------------------------------------
 
@@ -319,7 +321,6 @@ def is_fire(inci_dict):
     if(
         (
             'FIRE' in inci_dict['type'].strip().upper()
-            or 'FIRE' in inci_dict['type'].strip().upper()
             or 'SMOKE' in inci_dict['name'].strip().upper()
         )
         and
