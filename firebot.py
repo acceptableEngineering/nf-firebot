@@ -85,6 +85,48 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
+def send_email(message_str):
+    """
+    Output: email all addresses found in DB, via SendGrid
+    """
+    if(
+        'SENDGRID_FROM' not in secrets
+        or 'SENDGRID_TOKEN' not in secrets
+    ):
+        logger.error('A required var is not set in .env! Cannot send SendGrid message')
+        return False
+
+    recipients = db_contacts.search(tinydb.Query().email != '')
+
+    recipients_list = []
+
+    for recipient in recipients:
+        recipients_list.append({"email": recipient})
+
+    send_data = {
+        "from": {"email": secrets['SENDGRID_FROM']},
+        "personalizations": [{
+            "to": [
+                recipients_list
+            ]
+        }],
+        "subject": "Hello",
+        "content": [{"type": "text/plain", "value": "ANF Notif"}]
+    }
+
+    return requests.post(
+        'https://api.sendgrid.com/v3/mail/send',
+        timeout=10,
+        allow_redirects=False,
+        headers={
+            "Content-Type":"application/json",
+            "Authorization": "Bearer " + secrets['SENDGRID_TOKEN']
+        },
+        json = send_data
+    ).content
+
+# ------------------------------------------------------------------------------
+
 def send_sms(message_str):
     """
     Output: SMS all numbers found in self-service DB, via Twilio
