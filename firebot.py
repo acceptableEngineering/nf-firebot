@@ -85,7 +85,78 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def send_email(message_str):
+def clean_phone_number(phone_str):
+    return phone_str.replace('+1', '')
+
+# ------------------------------------------------------------------------------
+
+def send_sms_email(message_dict):
+    """
+    Output: email all email-to-SMS subscribers found in DB, via SendGrid
+    """
+    if(
+        'SENDGRID_FROM' not in secrets
+        or 'SENDGRID_TOKEN' not in secrets
+    ):
+        logger.error('A required var is not set in .env! Cannot send SendGrid message')
+        return False
+    
+    # --------
+    def split_message(message_dict):
+        message_segments = message_dict['body'].split('\n')
+        count = 0
+        return_dict = []
+        for message_segment in message_segments:
+            count += len(message_segment)
+            if count < 160:
+                if not return_dict:
+                    return_dict.append(message_segment) # Create first
+                else:
+                    return_dict[-1] = return_dict[-1] + '\n' + message_segment # Add to last
+                count += len(message_segment)
+            else:
+                count = 0
+                return_dict.append(message_segment)
+
+        return return_dict
+    # --------
+
+    split_message_results = split_message(message_dict)
+
+    recipients = db_contacts.search(tinydb.Query().carrier != '')
+
+    if len(recipients) > 0:
+
+        recipients_list = []
+
+        for recipient in recipients:
+            if recipient['carrier'] == 'Verizon':
+                recipients_list.append({"email": clean_phone_number(recipient['number']) + '@vtext.com'})
+        
+        for split_message_result in split_message_results:
+            send_data = {
+                "from": {"email": secrets['SENDGRID_FROM']},
+                "personalizations": [{
+                    "to": recipients_list
+                }],
+                "subject": message_dict['subject'],
+                "content": [{"type": "text/plain", "value": split_message_result}]
+            }
+
+            requests.post(
+                'https://api.sendgrid.com/v3/mail/send',
+                timeout=10,
+                allow_redirects=False,
+                headers={
+                    "Content-Type":"application/json",
+                    "Authorization": "Bearer " + secrets['SENDGRID_TOKEN']
+                },
+                json = send_data
+            )
+
+# ------------------------------------------------------------------------------
+
+def send_email(message_dict):
     """
     Output: email all addresses found in DB, via SendGrid
     """
@@ -98,25 +169,23 @@ def send_email(message_str):
 
     recipients = db_contacts.search(tinydb.Query().email != '')
 
-    if recipients.len() > 0:
+    if len(recipients) > 0:
 
         recipients_list = []
 
         for recipient in recipients:
-            recipients_list.append({"email": recipient['email']})
+                recipients_list.append({"email": recipient['email']})
 
         send_data = {
             "from": {"email": secrets['SENDGRID_FROM']},
             "personalizations": [{
-                "to": [
-                    recipients_list
-                ]
+                "to": recipients_list
             }],
-            "subject": "Hello",
-            "content": [{"type": "text/plain", "value": "ANF Notif"}]
+            "subject": message_dict['subject'],
+            "content": [{"type": "text/html", "value": message_dict['body']}]
         }
 
-        return requests.post(
+        requests.post(
             'https://api.sendgrid.com/v3/mail/send',
             timeout=10,
             allow_redirects=False,
@@ -125,11 +194,11 @@ def send_email(message_str):
                 "Authorization": "Bearer " + secrets['SENDGRID_TOKEN']
             },
             json = send_data
-        ).content
+        )
 
 # ------------------------------------------------------------------------------
 
-def send_sms(message_str):
+def send_sms(message_dict):
     """
     Output: SMS all numbers found in self-service DB, via Twilio
     """
@@ -142,13 +211,13 @@ def send_sms(message_str):
         logger.error('A required var is not set in .env! Cannot send Telegram message')
         return False
 
-    recipients = db_contacts.search(tinydb.Query().alert_level == 'all')
+    recipients = db_contacts.search(tinydb.Query().number != '')
 
     for recipient in recipients:
         client = Client(secrets['TWILIO_SID'], secrets['TWILIO_AUTH_TOKEN'])
 
         message = client.messages.create(
-            body = message_str,
+            body = message_dict['body'],
             from_ = secrets['TWILIO_NUMBER'],
             to = recipient['number']
         )
@@ -159,7 +228,7 @@ def send_sms(message_str):
 
 # ------------------------------------------------------------------------------
 
-def send_telegram(message_str, priority_str):
+def send_telegram(message_dict, priority_str):
     """
     Output: Telegram Channel
     """
@@ -168,7 +237,7 @@ def send_telegram(message_str, priority_str):
     if priority_str == 'major':
         chat_id = secrets['TELEGRAM_SPECIAL_CHAT_ID']
 
-    message_str = utf8_encode(message_str)
+    message_str = utf8_encode(message_dict['body'])
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
         secrets['TELEGRAM_BOT_SECRET'] + '/sendMessage?chat_id=' + \
         chat_id + '&text=' + message_str + '&parse_mode=html&disable_web_page_preview=true'
@@ -349,7 +418,7 @@ def process_major_alerts():
     for inci in db.all():
         if(
             inci['name'] != 'New'
-            and 'ANF-' in inci['id']
+            and secrets['NF_IDENTIFIER'] + '-' in inci['id']
             and 'resources' in inci
             and inci['resources'].strip() != ''
             and 'major_sent' not in inci
@@ -367,11 +436,36 @@ def process_major_alerts():
 
 # ------------------------------------------------------------------------------
 
+def generate_plain_stripped_initial_notif_body(inci_dict):
+    """
+    Returns a string usually passed into send_sms() with a prepared message
+    """
+    notif_body = '\n' + empty_fill(inci_dict['id']) + ': ' + empty_fill(inci_dict['name']) + \
+                ' (' + empty_fill(inci_dict['type']) + ')' + \
+                '\nLoc: ' + empty_fill(inci_dict['location']) + \
+                '\nCmt: ' + empty_fill(inci_dict['comment']) + \
+                '\nRes: ' + empty_fill(inci_dict['resources'])
+
+    if 'x' in inci_dict and 'y' in inci_dict:
+        notif_body += '\nLL, DDM: ' + empty_fill(str(inci_dict['x']) + ',' + \
+            str(inci_dict['y'])) + '\nLL, DD: ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
+            str(convert_gps_to_decimal(inci_dict['y'])))
+    
+    notif_body += '\n\nSee email for additional resources'
+
+    return {
+        "subject": inci_dict['id'],
+        "body": notif_body
+    }
+
+# ------------------------------------------------------------------------------
+
 def generate_plain_initial_notif_body(inci_dict):
     """
     Returns a string usually passed into send_sms() with a prepared message
     """
-    notif_body = 'ANF Poss. Fire:' + \
+    notif_body = secrets['NF_IDENTIFIER'] + ' Poss. Fire:' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
                 '\nName: ' + empty_fill(inci_dict['name']) + \
                 '\nType: ' + empty_fill(inci_dict['type']) + \
@@ -398,7 +492,10 @@ def generate_plain_initial_notif_body(inci_dict):
     if nearby_cameras:
         notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
 
-    return notif_body
+    return {
+        "subject": inci_dict['id'],
+        "body": notif_body
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -436,7 +533,52 @@ def generate_plain_diff_body(inci_dict, event_changes):
         if nearby_cameras:
             notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
 
-    return notif_body
+    return {
+        "subject": inci_dict['id'] + ' Changed',
+        "body": notif_body
+    }
+
+# ------------------------------------------------------------------------------
+
+def generate_html_diff_body(inci_dict, inci_db_entry, event_changes):
+    """
+    Generates an incident change notification, nice HTML version
+    """
+    send_maps_link = False
+
+    notif_body = 'Dispatch changed <b>' + inci_dict['id'] + '</b>'
+
+    for change in event_changes:
+        if change['name'] == 'resources':
+            notif_body += '<br />' + granular_diff_list(inci_dict, inci_db_entry)
+        else:
+            notif_body += '<br />' + uppercase_first(change['name']) + ': ' + \
+            '<s>' + change['old'] + '</s> ' + change['new']
+
+        if change['name'] == 'x' or change['name'] == 'y':
+            send_maps_link = True
+
+    if send_maps_link is True:
+        notif_body += '<br />Tools:' + \
+            '<br />   <em>Maps: ' + create_google_maps_url(inci_dict, True)  + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
+
+        notif_body += '<br />   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '<br />   Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+
+        nearby_cameras = nearby_cameras_url(inci_dict)
+
+        if nearby_cameras:
+            notif_body += '<br />   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
+                'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+
+    return {
+        "subject": inci_dict['id'] + ' Changed',
+        "body": notif_body
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -485,11 +627,60 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
             notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
                 'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
-    return notif_body
+    return {
+        "subject": False,
+        "body": notif_body
+    }
 
 # ------------------------------------------------------------------------------
 
-def generate_notif_body(inci_dict, priority_str):
+def generate_html_notif_body(inci_dict, priority_str =False):
+    """
+    Returns a string usually passed into send_email() with a prepared message
+    """
+    notify_title = 'New Possible Fire Incident: ' + inci_dict['id']
+
+    if priority_str == 'special':
+        notify_title = 'New Possible MAJOR Fire: ' + inci_dict['id']
+
+    notif_body = '<b>' + notify_title + '</b><br />' + \
+                '<table>' + \
+                '<br />ID: ' + empty_fill(inci_dict['id']) + \
+                '<br />Name: ' + empty_fill(inci_dict['name']) + \
+                '<br />Type: ' + empty_fill(inci_dict['type']) + \
+                '<br />Created: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
+                '<br />Comment: ' + empty_fill(inci_dict['comment']) + \
+                '<br />Acres: ' + empty_fill(inci_dict['acres']) + \
+                '<br />Resources: ' + empty_fill(inci_dict['resources']) + \
+                '<br />Location: ' + empty_fill(inci_dict['location'])
+
+    if 'x' in inci_dict and 'y' in inci_dict:
+        notif_body += '<br />Tools:' + \
+            '<br />&nbsp;&nbsp;&nbsp;<em>Maps: ' + create_google_maps_url(inci_dict, True) + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
+
+        notif_body += '<br />&nbsp;&nbsp;&nbsp;Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
+            str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+
+    nearby_cameras = nearby_cameras_url(inci_dict)
+
+    if nearby_cameras:
+        notif_body += '<br />&nbsp;&nbsp;&nbsp;<a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
+            'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+    
+    notif_body += '</table>'
+
+    return {
+        "subject": notify_title,
+        "body": notif_body
+    }
+
+# ------------------------------------------------------------------------------
+
+def generate_notif_body(inci_dict, priority_str =False):
     """
     Returns a string usually passed into send_telegram() with a prepared message
     """
@@ -525,7 +716,10 @@ def generate_notif_body(inci_dict, priority_str):
         notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
             'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
-    return notif_body
+    return {
+        "subject": False,
+        "body": notif_body
+    }
 
 # ------------------------------------------------------------------------------
 
@@ -726,6 +920,8 @@ def process_alerts(inci_list):
 
                 send_telegram(generate_rich_diff_body(inci, inci_db_entry, event_changes), 'low')
                 send_sms(generate_plain_diff_body(inci, event_changes))
+                send_sms_email(generate_plain_diff_body(inci, event_changes))
+                send_email(generate_rich_diff_body(inci, inci_db_entry, event_changes))
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
@@ -741,6 +937,8 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 send_sms(generate_plain_initial_notif_body(inci))
+                send_sms_email(generate_plain_stripped_initial_notif_body(inci))
+                send_email(generate_html_notif_body(inci))
 
     return True
 
