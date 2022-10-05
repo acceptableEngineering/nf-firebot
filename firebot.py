@@ -490,7 +490,7 @@ def generate_plain_initial_notif_body(inci_dict):
     nearby_cameras = nearby_cameras_url(inci_dict)
 
     if nearby_cameras:
-        notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
+        notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return {
         "subject": inci_dict['id'],
@@ -531,7 +531,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n- Cams within 15 mi.: ' + shorten_url(nearby_cameras['url'])
+            notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return {
         "subject": inci_dict['id'] + ' Changed',
@@ -625,7 +625,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
 
         if nearby_cameras:
             notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
-                'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+                'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return {
         "subject": False,
@@ -714,7 +714,7 @@ def generate_notif_body(inci_dict, priority_str =False):
 
     if nearby_cameras:
         notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
-            'Webcams within 15 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+            'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return {
         "subject": False,
@@ -971,16 +971,16 @@ def process_daily_recap():
 def nearby_cameras_url(inci_dict):
     """
     When given a dict with lat/long ('x','y') determines if there are any
-    wildfire cameras within 15 miles, and returns a URL showing any matches
+    wildfire cameras within 8 miles, and returns a URL showing any matches
     """
-    if os.path.exists('./extras/alertwildfire_processed.json') is False:
+    if os.path.exists('./extras/alertca_processed.json') is False:
         logger.error('No webcam manifest exists, skipping identify_nearby_cameras()')
         return False
 
-    camera_url = 'https://www.alertwildfire.org/tile-display/viewer/'
+    camera_url = 'https://alertca.live/tileset?camIds='
     match_count = 0
 
-    with open('./extras/alertwildfire_processed.json', encoding='utf8') as camera_json:
+    with open('./extras/alertca_processed.json', encoding='utf8') as camera_json:
         for camera in json.load(camera_json)['cameras']:
             this_coords = (camera['lat'],camera['lon'])
             this_distance = geopy.distance.geodesic(
@@ -988,16 +988,16 @@ def nearby_cameras_url(inci_dict):
                 this_coords
             ).mi
 
-            if this_distance < 15:
+            if this_distance <= 8:
                 match_count += 1
                 camera['distance'] = this_distance
 
                 if match_count == 1:
-                    prefix = '?'
+                    prefix = ''
                 else:
-                    prefix = '&'
+                    prefix = ','
 
-                camera_url += prefix + 'cams=' + camera['id']
+                camera_url += prefix + str(camera['id'])
 
         if match_count > 0:
             return {
