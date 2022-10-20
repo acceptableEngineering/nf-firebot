@@ -18,14 +18,15 @@ import geopy.distance
 import json_log_formatter
 import requests
 import tinydb
-from twilio.rest import Client
 from dotenv import dotenv_values
+from requests_oauthlib import OAuth1
 from lxml import html
 
 # Initialize JSON logging
 formatter = json_log_formatter.JSONFormatter()
 
 json_handler = logging.FileHandler(filename='./firebot-log.json')
+logging.basicConfig(stream=sys.stdout)
 json_handler.setFormatter(formatter)
 
 logger = logging.getLogger('firebot_json')
@@ -39,10 +40,35 @@ logger.setLevel(logging.ERROR)
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
 db = tinydb.TinyDB(exec_path + '/db.json')
-db_contacts = tinydb.TinyDB(exec_path + '/db_contacts.json')
 db_urls = tinydb.TinyDB(exec_path + '/db_urls.json')
 
 secrets = dotenv_values(".env")
+
+# ------------------------------------------------------------------------------
+
+def check_env_values(key_names):
+    """
+    Validation function used all over this script, including startup
+    """
+    if isinstance(key_names, str):
+        key_names = [key_names]
+
+    for check_key in key_names:
+        if(
+            check_key not in secrets
+            or not isinstance(check_key, str)
+            or secrets[check_key] == 'False'
+            or secrets[check_key] is False
+        ):
+            return False
+
+    return True
+
+# ------------------------------------------------------------------------------
+
+if not check_env_values('NF_IDENTIFIER'):
+    logger.error('NF_IDENTIFIER, the only required value, is not set in env.')
+    sys.exit(1)
 
 config = {
     "wildcad_url": "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + \
@@ -85,31 +111,83 @@ def utf8_encode(input_str):
 
 # ------------------------------------------------------------------------------
 
-def send_sms(message_str):
+def text_em_all_api(api_resource_str, req_type ='GET', payload =False):
     """
-    Output: SMS all numbers found in self-service DB, via Twilio
+    A simple function that works with the text-em-all.com API
+    """
+    if secrets['RUN_ENV'] == 'production':
+        base_url = 'https://rest.call-em-all.com'
+    else:
+        base_url = 'https://staging-rest.call-em-all.com'
+
+    url = base_url + '/' + api_resource_str
+
+    if payload is False:
+        payload = {}
+
+    auth = OAuth1(
+        secrets['TEXTEMALL_OAUTH_KEY'],
+        secrets['TEXTEMALL_OAUTH_SECRET'],
+        secrets['TEXTEMALL_OAUTH_TOKEN']
+    )
+
+    if req_type == 'GET':
+        req = requests.get(
+            url,
+            auth=auth,
+            json = payload
+        )
+        return json.loads(req.content)
+
+    if req_type == 'POST':
+        req = requests.post(
+            url,
+            auth=auth,
+            json = payload
+        )
+        return json.loads(req.content)
+
+    return False
+
+# ------------------------------------------------------------------------------
+
+def send_sms(str_sms_body, inci_dict):
+    """
+    Output: SMS all numbers found in self-service DB, via text-em-all.com
     """
 
+    unique_id = inci_dict['id'] + '_' + str(round(datetime.datetime.now().timestamp()))
+    # Validate presence of Text-Em-All secrets
     if(
-        'TWILIO_SID' not in secrets
-        or 'TWILIO_AUTH_TOKEN' not in secrets
-        or 'TWILIO_NUMBER' not in secrets
+        not check_env_values([
+            'TEXTEMALL_OAUTH_KEY',
+            'TEXTEMALL_OAUTH_SECRET',
+            'TEXTEMALL_OAUTH_TOKEN'
+        ])
     ):
-        logger.error('A required var is not set in .env! Cannot send Telegram message')
+        logger.error('A required TEXTEMALL_ var is not set in .env! Cannot send SMS')
         return False
 
-    recipients = db_contacts.search(tinydb.Query().alert_level == 'all')
+    # Find List ID (int) by National Forest Identifier (str)
+    for list_dict in text_em_all_api('v1/lists')['Items']:
+        if list_dict['ListName'] == secrets['NF_IDENTIFIER']:
+            found_list_id = int(list_dict['ListID'])
 
-    for recipient in recipients:
-        client = Client(secrets['TWILIO_SID'], secrets['TWILIO_AUTH_TOKEN'])
-
-        message = client.messages.create(
-            body = message_str,
-            from_ = secrets['TWILIO_NUMBER'],
-            to = recipient['number']
-        )
-
-        logger.debug('Twilio SMS send: %s', message.sid)
+    # Send SMS to ListID matching National Forest Identifier
+    logger.debug('SEND, text-em-all. ListID: %s', str(found_list_id))
+    send_result = text_em_all_api(
+        'v1/broadcasts',
+        'POST',
+        {
+            'BroadcastName': unique_id,
+            'BroadcastType': 'SMS',
+            'TextMessage': str_sms_body,
+            'Lists': [{
+                "ListID": found_list_id
+            }]
+        }
+    )
+    logger.debug('Resulting body: %s', send_result)
 
     return True
 
@@ -119,10 +197,17 @@ def send_telegram(message_str, priority_str):
     """
     Output: Telegram Channel
     """
-    chat_id = secrets['TELEGRAM_CHAT_ID']
+    if(
+        not check_env_values([
+            'TELEGRAM_BOT_ID',
+            'TELEGRAM_BOT_SECRET',
+            'TELEGRAM_CHAT_ID'
+        ])
+    ):
+        logger.debug('A required TELEGRAM_ var is not set in .env. Skipping')
+        return False
 
-    if priority_str == 'major':
-        chat_id = secrets['TELEGRAM_SPECIAL_CHAT_ID']
+    chat_id = secrets['TELEGRAM_CHAT_ID']
 
     message_str = utf8_encode(message_str)
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
@@ -132,17 +217,11 @@ def send_telegram(message_str, priority_str):
     if priority_str == 'low':
         url = url + '&disable_notification=true'
 
-    logger.debug('Telegram URL: %s', url)
+    logger.debug('SEND, Telegram. chat_id: %s', chat_id)
+    send_result = requests.get(url, timeout=10, allow_redirects=False)
+    logger.debug('Resulting body: %s', send_result.content)
 
-    if('False' in [
-        secrets['TELEGRAM_BOT_ID'],
-        secrets['TELEGRAM_BOT_SECRET'],
-        chat_id
-    ]):
-        logger.error('A required var is not set in .env! Cannot send Telegram message')
-        return False
-
-    return requests.get(url, timeout=10, allow_redirects=False)
+    return send_result
 
 # ------------------------------------------------------------------------------
 
@@ -294,31 +373,22 @@ def is_fire(inci_dict):
 
 def process_major_alerts():
     """
-    If major incident, report it to special channel as well. For this to work,
-    a new secret named TELEGRAM_SPECIAL_CHAT_ID needs to be defined in .env
+    If major incident, flag it as such
     """
-    if 'TELEGRAM_SPECIAL_CHAT_ID' not in secrets:
-        logger.debug('TELEGRAM_SPECIAL_CHAT_ID not defined in secrets')
-        return False
-
-    inci_db = tinydb.Query()
-
     for inci in db.all():
         if(
             inci['name'] != 'New'
-            and 'ANF-' in inci['id']
+            and secrets['NF_IDENTIFIER'] + '-' in inci['id']
             and 'resources' in inci
             and inci['resources'].strip() != ''
-            and 'major_sent' not in inci
+            and 'major_event' not in inci
         ):
             logger.debug('New Major event detected: %s', inci['id'])
 
-            this_notif_body = generate_notif_body(inci, 'major')
-
-            if send_telegram(this_notif_body, 'major'):
-                logger.debug('Adding flags.major_sent flag')
-                inci['major_sent'] = True
-                db.update(inci, inci_db.id == inci['id'])
+            logger.debug('Adding flags.major_event flag')
+            inci['major_event'] = True
+            inci_db = tinydb.Query()
+            db.update(inci, inci_db.id == inci['id'])
 
     return True
 
@@ -328,7 +398,7 @@ def generate_plain_initial_notif_body(inci_dict):
     """
     Returns a string usually passed into send_sms() with a prepared message
     """
-    notif_body = 'ANF Poss. Fire:' + \
+    notif_body = secrets['NF_IDENTIFIER'] + ' Poss. Fire:' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
                 '\nName: ' + empty_fill(inci_dict['name']) + \
                 '\nType: ' + empty_fill(inci_dict['type']) + \
@@ -384,7 +454,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
             '\n- ADSB-Ex.: ' + create_adsbex_url(inci_dict, False)
 
         notif_body += '\n- Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
-            str(inci_dict['y'])) + '\n- Lat/Long (DD):    ' + \
+            str(inci_dict['y'])) + '\n- Lat/Long (DD): ' + \
             empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
             str(convert_gps_to_decimal(inci_dict['y'])))
 
@@ -403,7 +473,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
     """
     send_maps_link = False
 
-    if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in inci_db_entry[0]:
+    if check_env_values('TELEGRAM_CHAT_ID') and 'original_message_id' in inci_db_entry[0]:
         if '@' in secrets['TELEGRAM_CHAT_ID']:
             telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID'].replace('@', '')
         else:
@@ -446,14 +516,11 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
 
 # ------------------------------------------------------------------------------
 
-def generate_notif_body(inci_dict, priority_str):
+def generate_notif_body(inci_dict):
     """
     Returns a string usually passed into send_telegram() with a prepared message
     """
     notify_title = 'New Possible Fire Incident'
-
-    if priority_str == 'special':
-        notify_title = 'New Possible MAJOR Fire'
 
     notif_body = '<b>' + notify_title + '</b>' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
@@ -682,14 +749,14 @@ def process_alerts(inci_list):
                     db.update(inci, inci_db.id == inci['id'])
 
                 send_telegram(generate_rich_diff_body(inci, inci_db_entry, event_changes), 'low')
-                send_sms(generate_plain_diff_body(inci, event_changes))
+                send_sms(generate_plain_diff_body(inci, event_changes), inci)
             else:
                 logger.debug('%s unchanged', inci['id'])
         else:
             if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
                 db.insert(inci)
-                telegram_json = send_telegram(generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = send_telegram(generate_notif_body(inci), 'high')
 
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
@@ -697,7 +764,7 @@ def process_alerts(inci_list):
                     inci['original_message_id'] = telegram_json['result']['message_id']
                     db.update(inci, inci_db.id == inci['id'])
 
-                send_sms(generate_plain_initial_notif_body(inci))
+                send_sms(generate_plain_initial_notif_body(inci), inci)
 
     return True
 
@@ -774,7 +841,7 @@ def shorten_url(url_str):
     very own logic and domain name
     """
 
-    if 'URL_SHORT' not in secrets:
+    if not check_env_values('URL_SHORT'):
         logger.debug('URL_SHORT not defined in secrets. Skipping')
         return url_str
 
