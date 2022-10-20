@@ -28,7 +28,7 @@ jobs:
         EOT
     - name: Run FireBot without env vars just to populate its DB
       run: |
-        python3 firebot.py debug mock
+        python3 firebot.py mock
     - name: Create real .env file
       env:
         NF_IDENTIFIER: ${{ secrets.NF_IDENTIFIER }}
@@ -71,7 +71,7 @@ jobs:
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Scenario 1 Run
       run: |
-        python3 firebot.py debug mock
+        python3 firebot.py mock
 
     - name: Add Resources from First DB Entry
       run: |
@@ -87,7 +87,7 @@ jobs:
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |
-        python3 firebot.py debug mock
+        python3 firebot.py mock
 
     - name: Remove Resources from First DB Entry
       run: |
@@ -103,4 +103,4 @@ jobs:
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |
-        python3 firebot.py debug mock
+        python3 firebot.py mock
