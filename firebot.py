@@ -121,9 +121,6 @@ def send_telegram(message_str, priority_str):
     """
     chat_id = secrets['TELEGRAM_CHAT_ID']
 
-    if priority_str == 'major':
-        chat_id = secrets['TELEGRAM_SPECIAL_CHAT_ID']
-
     message_str = utf8_encode(message_str)
     url = 'https://api.telegram.org/' + secrets['TELEGRAM_BOT_ID'] + ':' + \
         secrets['TELEGRAM_BOT_SECRET'] + '/sendMessage?chat_id=' + \
@@ -294,31 +291,22 @@ def is_fire(inci_dict):
 
 def process_major_alerts():
     """
-    If major incident, report it to special channel as well. For this to work,
-    a new secret named TELEGRAM_SPECIAL_CHAT_ID needs to be defined in .env
+    If major incident, flag it as such (for analytics and future use)
     """
-    if 'TELEGRAM_SPECIAL_CHAT_ID' not in secrets:
-        logger.debug('TELEGRAM_SPECIAL_CHAT_ID not defined in secrets')
-        return False
-
     inci_db = tinydb.Query()
 
     for inci in db.all():
         if(
             inci['name'] != 'New'
-            and 'ANF-' in inci['id']
+            and secrets['NF_IDENTIFIER'] + '-' in inci['id']
             and 'resources' in inci
             and inci['resources'].strip() != ''
-            and 'major_sent' not in inci
+            and 'flag_major' not in inci
         ):
             logger.debug('New Major event detected: %s', inci['id'])
 
-            this_notif_body = generate_notif_body(inci, 'major')
-
-            if send_telegram(this_notif_body, 'major'):
-                logger.debug('Adding flags.major_sent flag')
-                inci['major_sent'] = True
-                db.update(inci, inci_db.id == inci['id'])
+            inci['flag_major'] = True
+            db.update(inci, inci_db.id == inci['id'])
 
     return True
 
@@ -328,7 +316,7 @@ def generate_plain_initial_notif_body(inci_dict):
     """
     Returns a string usually passed into send_sms() with a prepared message
     """
-    notif_body = 'ANF Poss. Fire:' + \
+    notif_body = secrets['NF_IDENTIFIER'] + ' Poss. Fire:' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
                 '\nName: ' + empty_fill(inci_dict['name']) + \
                 '\nType: ' + empty_fill(inci_dict['type']) + \
@@ -451,9 +439,6 @@ def generate_notif_body(inci_dict, priority_str):
     Returns a string usually passed into send_telegram() with a prepared message
     """
     notify_title = 'New Possible Fire Incident'
-
-    if priority_str == 'special':
-        notify_title = 'New Possible MAJOR Fire'
 
     notif_body = '<b>' + notify_title + '</b>' + \
                 '\nID: ' + empty_fill(inci_dict['id']) + \
