@@ -95,7 +95,7 @@ def send_sms(message_str):
         or 'TWILIO_AUTH_TOKEN' not in secrets
         or 'TWILIO_NUMBER' not in secrets
     ):
-        logger.error('A required var is not set in .env! Cannot send Telegram message')
+        logger.error('A required var is not set in .env! Cannot send Twilio SMS')
         return False
 
     recipients = db_contacts.search(tinydb.Query().alert_level == 'all')
