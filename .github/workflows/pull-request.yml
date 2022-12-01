@@ -9,9 +9,9 @@ jobs:
     name: Pull Request Test
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout
     - name: Set up Python 3.10.8
-      uses: actions/setup-python@v1
+      uses: actions/setup-python
       with:
         python-version: 3.10.8
     - name: Install dependencies
