@@ -67,7 +67,7 @@ jobs:
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        TEXT='NOTICE: TEST 1, New Incident'
+        TEXT='TEST_1_Incoming'
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Scenario 1 Run
       run: |
@@ -83,7 +83,7 @@ jobs:
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        TEXT='NOTICE: TEST 2, Resources Removed'
+        TEXT='NOTICE_TEST_2'
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |
@@ -99,7 +99,7 @@ jobs:
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       run: |
-        TEXT='NOTICE: TEST 3, Resources Added'
+        TEXT='NOTICE_TEST_3'
         curl -s "https://api.telegram.org/${TELEGRAM_BOT_ID}:${TELEGRAM_BOT_SECRET}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${TEXT}"
     - name: Run FireBot to generate test notif.
       run: |

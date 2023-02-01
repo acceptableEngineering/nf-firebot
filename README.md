@@ -1,15 +1,23 @@
 # National Forest FireBot
-A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel.
+A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel. A new text messaging (SMS) component provides a self-service portal for end-users via a web server. SMS messages are sent via Twilio.
+
+---
 
 
 New Incident Notifications:
+
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Notif.png?raw=true)
 
-Changed Incident Notifications:*
+Changed Incident Notifications/Diffs:*
+
+
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Change-Notif.png?raw=true)
 
 Daily Recaps (Optional):*
+
+
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Daily-Recap.png?raw=true)
+
 
 \* Posts as a low priority notification (no push notification). See: `disable_notification` [in the Telegram docs](https://core.telegram.org/bots/api#sendmessage)
 
@@ -27,10 +35,17 @@ Before cloning this repo, you'll want to see if your forest of interest is liste
 
 ### Output
 - Telegram Channel(s)
+- SMS (via Twilio)
 
 ---
 
-### Setup
+### How it Works
+
+![Diagram](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/FireBot-Diagram.png?raw=true)
+
+---
+
+### Scraper/Sender Setup
 Using virtualenv:
 ```
 $ pip3 install -r requirements.txt
@@ -44,6 +59,12 @@ TELEGRAM_CHAT_ID=-XXXXXXXXXXXXX
 ```
 
 Setting up a Telegram channel, and fetching credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
+
+---
+
+### Web Server (Self-Service), SMS Setup
+You can use Twilio Studio to cut down on the parsing, validation, and conditionals that usually come along with an interactive SMS gateway:
+
 
 ---
 
