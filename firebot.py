@@ -434,7 +434,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
 
 # ------------------------------------------------------------------------------
 
-def generate_notif_body(inci_dict, priority_str):
+def generate_notif_body(inci_dict):
     """
     Returns a string usually passed into send_telegram() with a prepared message
     """
@@ -674,7 +674,7 @@ def process_alerts(inci_list):
             if is_fire(inci): # First time incident is seen, insert into DB
                 logger.debug('%s not found in DB, new inci', inci['id'])
                 db.insert(inci)
-                telegram_json = send_telegram(generate_notif_body(inci, 'normal'), 'high')
+                telegram_json = send_telegram(generate_notif_body(inci), 'high')
 
                 # Message sent successfully, store Telegram message ID
                 if telegram_json is not False:
@@ -709,6 +709,8 @@ def process_daily_recap():
                     '</b> actual fire incidents in ' + secrets['NF_IDENTIFIER']
 
             send_telegram(notif_body, 'low')
+
+    perform_cleanup(process_wildcad_inci_list)
 
 # ------------------------------------------------------------------------------
 
@@ -808,6 +810,29 @@ def shorten_url(url_str):
         })
 
     return secrets['URL_SHORT'] + '/' + short_url_result
+
+# ------------------------------------------------------------------------------
+
+def perform_cleanup(inci_list):
+    """
+    Removes entries from the DB no longer present in WildWeb
+    """
+    if inci_list:
+        keep_inci_ids = []
+
+        inci_db = tinydb.Query()
+
+        for inci in inci_list:
+            keep_inci_ids.append(inci['id'])
+
+        for inci in db.all():
+            if inci['id'] not in keep_inci_ids:
+                print("Delete: " + inci['id'])
+                db.remove(inci_db.id == inci['id'])
+
+        return True
+
+    return False
 
 # ------------------------------------------------------------------------------
 
