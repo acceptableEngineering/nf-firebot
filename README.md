@@ -1,90 +1,127 @@
 # National Forest FireBot
-A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel. A new text messaging (SMS) component provides a self-service portal for end-users via a web server. SMS messages are sent via Twilio.
+A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel (optional). An SMS (text messaging) component provides a self-service portal for end-users via a web server. SMS messages are sent via Twilio (optional).
 
 ---
 
+## Live Demo / Real-World Usage
+This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. At the time of this writin, 131 people are making use of it, many of whom are wildland firefighters in our local national forest. You can see "ANF FireBot" in action here:
+https://t.me/firebotanf
+
+And read more about it here:
+https://landmark717.com/blog/telegram-firebot.html
+
+---
+
+## Features
 
 New Incident Notifications:
 
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Notif.png?raw=true)
 
-Changed Incident Notifications/Diffs:*
 
+Changed Incident Notifications/Diffs:*
 
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Change-Notif.png?raw=true)
 
-Daily Recaps (Optional):*
 
+Daily Recaps:*
 
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Daily-Recap.png?raw=true)
 
 
-\* Posts as a low priority notification (no push notification). See: `disable_notification` [in the Telegram docs](https://core.telegram.org/bots/api#sendmessage)
+\* Posts as a low priority notification (no push notification) via `disable_notification` [(Telegram doc.)](https://core.telegram.org/bots/api#sendmessage)
 
 ---
 
-### Prerequisite
+## Prerequisite
 Before cloning this repo, you'll want to see if your forest of interest is listed on [WildWeb](http://www.wildcad.net/WildCADWeb.asp)
 
 ---
 
-### Input
+## Input (Required)
 - WildWeb
 
 ---
 
-### Output
-- Telegram Channel(s)
-- SMS (via Twilio)
+## Outputs (Optional)
+- Telegram Channel
+- SMS, via Twilio
 
 ---
 
-### How it Works
+## How it Works
 
 ![Diagram](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/FireBot-Diagram.png?raw=true)
 
 ---
 
-### Scraper/Sender Setup
-Using virtualenv:
+## Setup
+### Option #1: Quck Start
 ```
-$ pip3 install -r requirements.txt
+git clone git@github.com:acceptableEngineering/nf-firebot.git
+cd nf-firebot
+pip3 install -r requirements.txt
+echo 'NF_IDENTIFIER=ANF' >> .env
+python3 firebot.py
 ```
+
+### Option #2: Customized Setup
 Create a `.env` file with your National Forest ID and secret values. You can use one set of settings in a Production environment, and one locally.
 ```
 NF_IDENTIFIER=ANF
 TELEGRAM_BOT_ID=botXXXXXXXXXX
 TELEGRAM_BOT_SECRET=XXXX-XXXXXXXXXXXXXXX-XXXXXXXXX-XXX
 TELEGRAM_CHAT_ID=-XXXXXXXXXXXXX
+TWILIO_SID=XXXXXXXXXXXXX
+TWILIO_AUTH_TOKEN=XXXXXXXXXXXXX
+TWILIO_NUMBER=XXXXXXXXXXXXX
+URL_SHORT=XXXX.X
 ```
 
-Setting up a Telegram channel, and fetching credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
+### `.env` keys, defined
+The only required key is `NF_IDENTIFIER`. It is also the only value that is not meant to be kept secret, so keep the values of the other keys to yourself! Also, if you run NF-FireBot without any/all of the keys for a feature, it will just run without attempting to use that feature.
+- `NF_IDENTIFIER` (the only required key): Your national forest's identifier as found [on WildCAD](http://www.wildcad.net/WildCADWeb.asp)
+- `TELEGRAM_BOT_ID` (optional): The ID of your Telegram bot (see below)
+- `TELEGRAM_BOT_SECRET` (optional): The Secret for your Telegram bot (see below)
+- `TELEGRAM_CHAT_ID` (optional): The Chat or User ID you want to post notifications to
+    - Channel example: `@MyForestFireBot`
+    - User DM example: `123456789`
+- `TWILIO_SID` (optional): Your secret Twilio String Identifier, found in your Twilio dashboard
+- `TWILIO_AUTH_TOKEN` (optional): Your secret Twilio API Auth Token, found in your Twilio dashboard
+- `TWILIO_NUMBER` (optional): Your Twilio-registered phone number (EG: `+18184567890`)
+- `URL_SHORT` (optional): The domain name you want to use as a URL shortener in SMS. (EG: `lm7.us`)
+
+### Setup: Telegram
+Read about how to setup up a Telegram channel and bot/credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
+
+### Setup: Twilio (SMS Self-Service + URL Shortening)
+This advanced feature adds SMS functionality that allows your end-users to manage their subscrptions with text messages. In our live implementation using Twilio Studio, we support:
+- `Help Me`: provides a list of commands and email address to email for help
+- `Subscribe`: subscribes the user to receive notifications (adds them to `db-contacts.son`)
+- `Unsubscribe`: removes the user from the user DB (`db-contacts.json`) so they no longer receive notifications
+
+Definitely use Twilio Studio to cut down on the parsing, validation, and conditionals that usually come along with an interactive SMS gateway. Here's what our live one looks like:
+
+![Diagram](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Twilio-Studio.png?raw=true)
 
 ---
 
-### Web Server (Self-Service), SMS Setup
-You can use Twilio Studio to cut down on the parsing, validation, and conditionals that usually come along with an interactive SMS gateway:
-
-
----
-
-### Execution
+### Execution Options
 ```
 python3 fireboy.py [debug] [mock]
 ```
 
-Bare-bones, no options passed. Good for production use:
+#### Bare-bones
+No options passed. Good for production use:
 ```
 python3 firebot.py
 ```
 
-Optional arguments list:
-
+#### Optional arguments:
 - `debug`: Dev/debug mode which adds many helpful entries to `firebot-log.json`
-
 - `mock`: Uses local mock data found in `.development/` instead of fetching via web
 
-Argument usage/a good local dev example:
+#### Dev Example:
 ```
 python3 firebot.py debug mock
 ```
@@ -96,19 +133,10 @@ You will likely want to run the script frequently. One simple approach is to cre
 ```
 * * * * * python3 firebot.py
 ```
-The exact command used in our running Prod environment is an adminttedly scrappy approach, but also posts to a monitored CloudWatch metric:
+The exact command used in our running Prod environment is an adminttedly scrappy approach, but it works well, and posts to a monitored CloudWatch metric:
 ```
-* * * * * cd ~/nf-firebot/ && git pull -X theirs > /dev/null 2>&1 && python3 firebot.py live && /usr/bin/aws cloudwatch put-metric-data --metric-name Run --namespace ANF-Firebot --value 1 --region us-west-2
+* * * * * cd ~/nf-firebot/ && git pull -X theirs > /dev/null 2>&1; python3 firebot.py && /usr/bin/aws cloudwatch put-metric-data --metric-name Run --namespace ANF-Firebot --value 1 --region us-west-2
 ```
-
----
-
-### Live Demo / Real-World Usage
-This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. You can see "ANF FireBot" in action here:
-https://t.me/firebotanf
-
-And read more about it here:
-https://landmark717.com/blog/telegram-firebot.html
 
 ---
 
