@@ -1,10 +1,10 @@
 # National Forest FireBot
-A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel (optional). An SMS (text messaging) component provides a self-service portal for end-users via a web server. SMS messages are sent via Twilio (optional).
+A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings in a given Telegram channel (optional). An optional SMS/text messaging component provides a self-service portal for end-users via a web server. SMS messages are sent via Twilio.
 
 ---
 
 ## Live Demo / Real-World Usage
-This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. At the time of this writin, 131 people are making use of it, many of whom are wildland firefighters in our local national forest. You can see "ANF FireBot" in action here:
+This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. At the time of this writin, 136 people are making use of it, many of whom are wildland firefighters in our local national forest. You can see "ANF FireBot" in action here:
 https://t.me/firebotanf
 
 And read more about it here:
@@ -24,12 +24,10 @@ Changed Incident Notifications/Diffs:*
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Change-Notif.png?raw=true)
 
 
-Daily Recaps:*
+Daily Recaps:
+(Posts as a low priority notification/no push notification, via Telegram API `disable_notification`)
 
 ![Screenshot](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/Telegram-Daily-Recap.png?raw=true)
-
-
-\* Posts as a low priority notification (no push notification) via `disable_notification` [(Telegram doc.)](https://core.telegram.org/bots/api#sendmessage)
 
 ---
 
@@ -49,14 +47,15 @@ Before cloning this repo, you'll want to see if your forest of interest is liste
 
 ---
 
-## How it Works
+## Our Setup
 
 ![Diagram](https://github.com/acceptableEngineering/nf-firebot/blob/main/.github/README-images/FireBot-Diagram.png?raw=true)
 
 ---
 
-## Setup
+## Get Started
 ### Option #1: Quck Start
+Assumes you have Python3 and pip3 installed already.
 ```
 git clone git@github.com:acceptableEngineering/nf-firebot.git
 cd nf-firebot
@@ -91,13 +90,13 @@ The only required key is `NF_IDENTIFIER`. It is also the only value that is not 
 - `TWILIO_NUMBER` (optional): Your Twilio-registered phone number (EG: `+18184567890`)
 - `URL_SHORT` (optional): The domain name you want to use as a URL shortener in SMS. (EG: `lm7.us`)
 
-### Setup: Telegram
+### Setup: Telegram (Optional)
 Read about how to setup up a Telegram channel and bot/credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
 
-### Setup: Twilio (SMS Self-Service + URL Shortening)
+### Setup: Twilio, for SMS Self-Service + URL Shortening (Optional)
 This advanced feature adds SMS functionality that allows your end-users to manage their subscrptions with text messages. In our live implementation using Twilio Studio, we support:
 - `Help Me`: provides a list of commands and email address to email for help
-- `Subscribe`: subscribes the user to receive notifications (adds them to `db-contacts.son`)
+- `Subscribe`: subscribes the user to receive notifications (adds them to `db-contacts.json`)
 - `Unsubscribe`: removes the user from the user DB (`db-contacts.json`) so they no longer receive notifications
 
 Definitely use Twilio Studio to cut down on the parsing, validation, and conditionals that usually come along with an interactive SMS gateway. Here's what our live one looks like:
@@ -108,7 +107,7 @@ Definitely use Twilio Studio to cut down on the parsing, validation, and conditi
 
 ### Execution Options
 ```
-python3 fireboy.py [debug] [mock]
+python3 firebot.py [debug] [mock]
 ```
 
 #### Bare-bones
