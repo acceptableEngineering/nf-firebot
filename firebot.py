@@ -269,7 +269,7 @@ def is_fire(inci_dict):
     Simple algo determines whether the given incident matches our criteria for
     a fire incident
     """
-    ignore_list = ('DAILY STATUS')
+    ignore_list = 'DAILY STATUS'
 
     if(
         (
@@ -790,6 +790,8 @@ def shorten_url(url_str):
                 number_start = 0
             else:
                 number_start += 1
+
+        return False
 
     # --------------------------------------------------------------------------
 
