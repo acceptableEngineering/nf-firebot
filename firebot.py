@@ -51,15 +51,15 @@ secrets = dotenv_values(".env")
 config = {}
 
 
-if 'WILDWEB_E' not in secrets:
-    secrets['WILDWEB_E'] = False
-    config['wildcad_url'] = "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + "recent.htm"
-elif 'WILDWEB_E' in secrets:
-    if secrets['WILDWEB_E'] is True:
-        config['wildcad_url'] = "https://wildwebe.net/?dc_name=" + secrets['NF_WWE_IDENTIFIER']
+if 'WILDWEB_E' in secrets:
+    config['wildcad_url'] = "https://snknmqmon6.execute-api.us-west-2.amazonaws.com/centers/" + secrets['NF_WWE_IDENTIFIER'].upper() + "/incidents"
+
     if 'NF_WWE_IDENTIFIER' not in secrets:
         logger.error('You have set WILDWEB_E but not NF_WWE_IDENTIFIER in .env. Cannot continue')
         sys.exit(1)
+else:
+    secrets['WILDWEB_E'] = False
+    config['wildcad_url'] = "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + "recent.htm"
 
 # ------------------------------------------------------------------------------
 
@@ -171,16 +171,20 @@ def process_wildcad():
                 page = file.read()
     else:
         try:
-            page = requests.get(config['wildcad_url'])
+            page = requests.get(config['wildcad_url'], verify=False)
         except requests.exceptions.RequestException as error:
             logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
             logger.error(error)
             sys.exit(1)
 
         if (
-            page.content == '' or
-            int(page.headers['Content-Length']) == 0
+            secrets['WILDWEB_E'] is False and
+            (page.content == '' or
+            int(page.headers['Content-Length']) == 0)
         ):
+            logger.error('Wildcad payload empty %s', config['wildcad_url'])
+            sys.exit(1)
+        elif page.content == '': # WildWeb-E = just confirm valid body
             logger.error('Wildcad payload empty %s', config['wildcad_url'])
             sys.exit(1)
         else:
@@ -198,7 +202,7 @@ def process_wildcad():
         rows = tree.xpath('//tr')
         for row in rows:
             data.append([c.text_content() for c in row.getchildren()])
-    else:
+    else: # WildWeb-E uses JSON
         for row in json.loads(page)[0]['data']:
             data.append(row)
 
@@ -211,12 +215,16 @@ def process_wildcad():
                 'name': empty_fill(item['name']), # "name" field
                 'type': empty_fill(item['type']), # "type" field
                 'comment': empty_fill(item['webComment']), # "webComment" field
-                'resources': empty_fill(item['resources']), # "resources" field
                 'acres': empty_fill(item['acres']), # "acres" field
+                'resources': empty_fill('')
             }
 
+            if isinstance(item['resources'], list): # "resources" field
+                if len(item['resources']) > 0 and item['resources'][0] is not None:
+                    item_dict['resources'] = ' '.join(item['resources'])
+
             if item['latitude'] and item['longitude']: # Item has geo data
-                item_dict['x'] = item['longitude']
+                item_dict['x'] = '-' + item['longitude']
                 item_dict['y'] = item['latitude']
 
             inci_list.append(item_dict)
@@ -371,7 +379,7 @@ def generate_plain_initial_notif_body(inci_dict):
                 '\nAcres: ' + empty_fill(inci_dict['acres']) + \
                 '\nResources: ' + empty_fill(inci_dict['resources'])
     
-    if secrets['WILDWEB_E'] == False:
+    if secrets['WILDWEB_E'] == False: # Only WildWeb has this field
         notif_body += '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
@@ -388,8 +396,8 @@ def generate_plain_initial_notif_body(inci_dict):
 
         nearby_cameras = nearby_cameras_url(inci_dict)
 
-    if nearby_cameras:
-        notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
+        if nearby_cameras:
+            notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
@@ -513,9 +521,9 @@ def generate_notif_body(inci_dict):
 
         nearby_cameras = nearby_cameras_url(inci_dict)
 
-    if nearby_cameras:
-        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
-            'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+        if nearby_cameras:
+            notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
+                'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
@@ -526,8 +534,10 @@ def relative_time(input_str):
     Parses a date/time like "08/10/2022 16:08" into "Aug 10 '22, 16:08"
     """
     if secrets['WILDWEB_E']:
-        # return datetime.datetime.strptime(input_str, '%Y-%m-%dT%H:%M:%S').strftime('%b %e \'%y, %H:%S PT')
-        return False
+        if '.' in input_str:
+            return datetime.datetime.strptime(input_str, '%Y-%m-%dT%H:%M:%S.%f').strftime('%b %e \'%y, %H:%S PT')
+        else:
+            return datetime.datetime.strptime(input_str, '%Y-%m-%dT%H:%M:%S').strftime('%b %e \'%y, %H:%S PT')
     else:
         return datetime.datetime.strptime(input_str, '%m/%d/%Y %H:%M').strftime('%b %e \'%y, %H:%S PT')
 
@@ -782,9 +792,6 @@ def nearby_cameras_url(inci_dict):
 
     camera_url = 'https://alertca.live/tileset?camIds='
     match_count = 0
-
-    if secrets['WILDWEB_E']:
-        inci_dict['x'] = '-' + inci_dict['x']
 
     with open('./extras/alertca_processed.json', encoding='utf8') as camera_json:
         for camera in json.load(camera_json)['cameras']:
