@@ -32,7 +32,7 @@ Daily Recaps:
 ---
 
 ## Prerequisite
-Before cloning this repo, you'll want to see if your forest of interest is listed on [WildWeb](http://www.wildcad.net/WildCADWeb.asp)
+Before cloning this repo, you'll want to see if your forest of interest is listed on [WildWeb](http://www.wildcad.net/WildCADWeb.asp) OR already know if it uses the new `WildWebE.net` platform
 
 ---
 
@@ -68,6 +68,8 @@ python3 firebot.py
 Create a `.env` file with your National Forest ID and secret values. You can use one set of settings in a Production environment, and one locally.
 ```
 NF_IDENTIFIER=ANF
+WILDWEB_E=True
+NF_WWE_IDENTIFIER=caancc
 TELEGRAM_BOT_ID=botXXXXXXXXXX
 TELEGRAM_BOT_SECRET=XXXX-XXXXXXXXXXXXXXX-XXXXXXXXX-XXX
 TELEGRAM_CHAT_ID=-XXXXXXXXXXXXX
@@ -150,3 +152,5 @@ There are several ways to contribute to this project. You can provide feedback, 
 As many first responders are now using ANF-FireBot (see "Live Demo" above):
 
 THIS FREE SOFTWARE AND THE FULLY-OPERATIONAL INSTALLATION ("ANF FIREBOT") ARE PROVIDED WITHOUT WARRANTY WHATSOEVER. THE DEVELOPER(S), VOLUNTEER(S), AND OTHERS CANNOT BE HELD RESPONSIBLE FOR FALSE REPORTS, MISSED EVENTS/REPORTS, SERVICE OUTAGES, OR OTHER ISSUES. YOU SHOULD CONTINUE TO FOLLOW YOUR ORGANIZATION'S PROTOCOLS, TREATING THE INFORMATION PROVIDED BY FIREBOT AS ANECDOTAL.
+
+NF-FIREBOT IS FREE TO USE, OPEN SOURCE SOFTWARE AND IS NOT AFFILIATED WITH WILDCAD, WILDWEB, WILDWEB-E, ETC.
