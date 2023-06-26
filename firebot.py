@@ -42,12 +42,24 @@ db = tinydb.TinyDB(exec_path + '/db.json')
 db_contacts = tinydb.TinyDB(exec_path + '/db_contacts.json')
 db_urls = tinydb.TinyDB(exec_path + '/db_urls.json')
 
-secrets = dotenv_values(".env")
+# ------------------------------------------------------------------------------
+"""
+Sets up user-defined parameters, and their defaults
+"""
 
-config = {
-    "wildcad_url": "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + \
-        "recent.htm"
-}
+secrets = dotenv_values(".env")
+config = {}
+
+
+if 'WILDWEB_E' in secrets:
+    config['wildcad_url'] = "https://snknmqmon6.execute-api.us-west-2.amazonaws.com/centers/" + secrets['NF_WWE_IDENTIFIER'].upper() + "/incidents"
+
+    if 'NF_WWE_IDENTIFIER' not in secrets:
+        logger.error('You have set WILDWEB_E but not NF_WWE_IDENTIFIER in .env. Cannot continue')
+        sys.exit(1)
+else:
+    secrets['WILDWEB_E'] = False
+    config['wildcad_url'] = "http://www.wildcad.net/WCCA-" + secrets['NF_IDENTIFIER'] + "recent.htm"
 
 # ------------------------------------------------------------------------------
 
@@ -59,7 +71,10 @@ for arg in sys.argv:
 
     if arg == 'mock':
         MOCK_DATA = True
-        config['wildcad_url'] = '.development/wildcad_mock_data.htm'
+        if secrets['WILDWEB_E']:
+            config['wildcad_url'] = '.development/wildweb-e_mock_data.json'
+        else:
+            config['wildcad_url'] = '.development/wildcad_mock_data.htm'
         logger.debug('Using mock data: %s', config['wildcad_url'])
 
 # ------------------------------------------------------------------------------
@@ -148,60 +163,101 @@ def process_wildcad():
     Data source: Wildcad
     """
     if MOCK_DATA:
-        with open(config['wildcad_url'], 'r', encoding="utf-8") as file:
-            page = file.read()
+        if secrets['WILDWEB_E']:
+            with open(config['wildcad_url'], 'r', encoding="utf-8") as file:
+                page = file.read()
+        else:
+            with open(config['wildcad_url'], 'r', encoding="utf-8") as file:
+                page = file.read()
     else:
         try:
-            page = requests.get(config['wildcad_url'])
+            page = requests.get(config['wildcad_url'], verify=False)
         except requests.exceptions.RequestException as error:
             logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
             logger.error(error)
             sys.exit(1)
 
         if (
-            page.content == '' or
-            int(page.headers['Content-Length']) == 0
+            secrets['WILDWEB_E'] is False and
+            (page.content == '' or
+            int(page.headers['Content-Length']) == 0)
         ):
+            logger.error('Wildcad payload empty %s', config['wildcad_url'])
+            sys.exit(1)
+        elif page.content == '': # WildWeb-E = just confirm valid body
             logger.error('Wildcad payload empty %s', config['wildcad_url'])
             sys.exit(1)
         else:
             page = page.content
 
-    tree = html.fromstring(page)
-    rows = tree.xpath('//tr')
+
+    checked_ids = []
+    counter = 0
     data = []
     inci_list = []
-    for row in rows:
-        data.append([c.text_content() for c in row.getchildren()])
 
-    counter = 0
-    checked_ids = []
+
+    if secrets['WILDWEB_E'] is False: # WildWeb uses HTML tables
+        tree = html.fromstring(page)
+        rows = tree.xpath('//tr')
+        for row in rows:
+            data.append([c.text_content() for c in row.getchildren()])
+    else: # WildWeb-E uses JSON
+        for row in json.loads(page)[0]['data']:
+            data.append(row)
 
     for item in data:
         counter = counter + 1
-        if counter > 2 and item[1] not in checked_ids: # Skip header rows
-            item_date = item[0].split('/')
-            item_date_split = item_date[2].split(' ')
-            item_date[2] = item_date_split[0]
-            item_date.append(item_date_split[1])
-            checked_ids.append(item[1])
+        if secrets['WILDWEB_E']:
+            this_fiscal_data = json.loads(item['fiscal_data'])
+
+            if this_fiscal_data['wfdssunit'] is None:
+                this_fiscal_data['wfdssunit'] = 'N/A'
 
             item_dict = {
-                'time_created': empty_fill(item[0]), # "Date" field
-                'id': empty_fill(item[1]), # "Inc #" field
-                'name': empty_fill(item[2]), # "Name" field
-                'type': empty_fill(item[3]), # "Type" field
-                'location': empty_fill(item[4]), # "Location" field
-                'comment': empty_fill(item[5]), # "WebComment" field
-                'resources': empty_fill(item[6]), # "Resources" field
-                'acres': empty_fill(item[8]), # "Acres" field
+                'time_created': empty_fill(item['date']), # "date" field
+                'id': empty_fill(this_fiscal_data['wfdssunit'] + '-' + this_fiscal_data['inc_num']), # Modified "inc_num" field
+                'name': empty_fill(item['name']), # "name" field
+                'type': empty_fill(item['type']), # "type" field
+                'comment': empty_fill(item['webComment']), # "webComment" field
+                'acres': empty_fill(item['acres']), # "acres" field
+                'resources': empty_fill('')
             }
-            if ', ' in item[9]: # Item has geo data
-                item_xy_split = item[9].split(', ')
-                item_dict['x'] = item_xy_split[0]
-                item_dict['y'] = item_xy_split[1]
+
+            if isinstance(item['resources'], list): # "resources" field
+                if len(item['resources']) > 0 and item['resources'][0] is not None:
+                    item_dict['resources'] = ' '.join(item['resources'])
+
+            if item['latitude'] and item['longitude']: # Item has geo data
+                item_dict['x'] = '-' + item['longitude']
+                item_dict['y'] = item['latitude']
 
             inci_list.append(item_dict)
+        else:
+            if counter > 2 and item[1] not in checked_ids: # Skip header rows
+                item_date = item[0].split('/')
+                item_date_split = item_date[2].split(' ')
+                item_date[2] = item_date_split[0]
+                item_date.append(item_date_split[1])
+                checked_ids.append(item[1])
+
+                item_dict = {
+                    'time_created': empty_fill(item[0]), # "Date" field
+                    'id': empty_fill(item[1]), # "Inc #" field
+                    'name': empty_fill(item[2]), # "Name" field
+                    'type': empty_fill(item[3]), # "Type" field
+                    'location': empty_fill(item[4]), # "Location" field
+                    'comment': empty_fill(item[5]), # "WebComment" field
+                    'resources': empty_fill(item[6]), # "Resources" field
+                    'acres': empty_fill(item[8]), # "Acres" field
+                }
+
+                if ', ' in item[9]: # Item has geo data
+                    item_xy_split = item[9].split(', ')
+                    item_dict['y'] = item_xy_split[0]
+                    item_dict['x'] = item_xy_split[1]
+
+                inci_list.append(item_dict)
 
     return inci_list
 
@@ -229,7 +285,10 @@ def empty_fill(input_str):
     Returns an empty string when given a useless string, to maintain one-per-line
     formatting in notification messages
     """
-    if len(input_str) < 1 or input_str == '.':
+    if input_str:
+        if len(input_str) < 1 or input_str == '.':
+            return ''
+    else:
         return ''
 
     return str(input_str)
@@ -323,8 +382,10 @@ def generate_plain_initial_notif_body(inci_dict):
                 '\nCreated: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
                 '\nComment: ' + empty_fill(inci_dict['comment']) + \
                 '\nAcres: ' + empty_fill(inci_dict['acres']) + \
-                '\nResources: ' + empty_fill(inci_dict['resources']) + \
-                '\nLocation: ' + empty_fill(inci_dict['location'])
+                '\nResources: ' + empty_fill(inci_dict['resources'])
+    
+    if secrets['WILDWEB_E'] == False: # Only WildWeb has this field
+        notif_body += '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
         notif_body += '\nTools:' + \
@@ -338,10 +399,10 @@ def generate_plain_initial_notif_body(inci_dict):
             empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
             str(convert_gps_to_decimal(inci_dict['y'])))
 
-    nearby_cameras = nearby_cameras_url(inci_dict)
+        nearby_cameras = nearby_cameras_url(inci_dict)
 
-    if nearby_cameras:
-        notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
+        if nearby_cameras:
+            notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
 
     return notif_body
 
@@ -447,8 +508,10 @@ def generate_notif_body(inci_dict):
                 '\nCreated: ' + empty_fill(relative_time(inci_dict['time_created'])) + \
                 '\nComment: ' + empty_fill(inci_dict['comment']) + \
                 '\nAcres: ' + empty_fill(inci_dict['acres']) + \
-                '\nResources: ' + empty_fill(inci_dict['resources']) + \
-                '\nLocation: ' + empty_fill(inci_dict['location'])
+                '\nResources: ' + empty_fill(inci_dict['resources'])
+    
+    if 'location' in inci_dict:
+        notif_body += '\nLocation: ' + empty_fill(inci_dict['location'])
 
     if 'x' in inci_dict and 'y' in inci_dict:
         notif_body += '\nTools:' + \
@@ -458,14 +521,14 @@ def generate_notif_body(inci_dict):
 
         notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
             str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
-            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
-            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+            empty_fill(str(convert_gps_to_decimal(inci_dict['y'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['x']))) + '</em>'
 
-    nearby_cameras = nearby_cameras_url(inci_dict)
+        nearby_cameras = nearby_cameras_url(inci_dict)
 
-    if nearby_cameras:
-        notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
-            'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+        if nearby_cameras:
+            notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
+                'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
@@ -475,7 +538,13 @@ def relative_time(input_str):
     """
     Parses a date/time like "08/10/2022 16:08" into "Aug 10 '22, 16:08"
     """
-    return datetime.datetime.strptime(input_str, '%m/%d/%Y %H:%M').strftime('%b %e \'%y, %H:%S PT')
+    if secrets['WILDWEB_E']:
+        if '.' in input_str:
+            return datetime.datetime.strptime(input_str, '%Y-%m-%dT%H:%M:%S.%f').strftime('%b %e \'%y, %H:%S PT')
+        else:
+            return datetime.datetime.strptime(input_str, '%Y-%m-%dT%H:%M:%S').strftime('%b %e \'%y, %H:%S PT')
+    else:
+        return datetime.datetime.strptime(input_str, '%m/%d/%Y %H:%M').strftime('%b %e \'%y, %H:%S PT')
 
 # ------------------------------------------------------------------------------
 
@@ -492,8 +561,8 @@ def create_google_maps_url(inci_dict, rich_bool =False):
     Returns a Google Maps URL for given X/Y coordinates
     """
     url = 'https://www.google.com/maps/search/' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '?sa=X'
+        str(convert_gps_to_decimal(inci_dict['y'])) + ',' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '?sa=X'
 
     if rich_bool:
         return '<a href="' + url + '">Google</a>'
@@ -507,8 +576,8 @@ def create_applemaps_url(inci_dict, rich_bool =False):
     Returns a Google Maps URL for given X/Y coordinates
     """
     url = 'http://maps.apple.com/?ll=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + ',' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&q=' + inci_dict['id']
+        str(convert_gps_to_decimal(inci_dict['y'])) + ',' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '&q=' + inci_dict['id']
 
     if rich_bool:
         return '<a href="' + url + '">Apple</a>'
@@ -522,8 +591,8 @@ def create_adsbex_url(inci_dict, rich_bool =False):
     Returns an ADSB Exchange URL for given X/Y coordinates
     """
     url = 'https://globe.adsbexchange.com/?lat=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + '&lon=' + \
-        str(convert_gps_to_decimal(inci_dict['y'])) + '&zoom=11.5' + inci_dict['id']
+        str(convert_gps_to_decimal(inci_dict['y'])) + '&lon=' + \
+        str(convert_gps_to_decimal(inci_dict['x'])) + '&zoom=11.5' + inci_dict['id']
 
     if rich_bool:
         return '<a href="' + url + '">ADS-B Ex.</a>'
@@ -537,8 +606,8 @@ def create_waze_url(inci_dict, rich_bool =False):
     Returns a Waze URL for given X/Y coordinates
     """
     url = 'https://www.waze.com/ul?ll=' + \
-        str(convert_gps_to_decimal(inci_dict['x'])) + '%2C' + \
-        str(convert_gps_to_decimal(inci_dict['y']))
+        str(convert_gps_to_decimal(inci_dict['y'])) + '%2C' + \
+        str(convert_gps_to_decimal(inci_dict['x']))
 
     if rich_bool:
         return '<a href="' + url + '">Waze</a>'
@@ -625,6 +694,9 @@ def convert_gps_to_decimal(input_int):
         return degrees + minutes/60
 
     # --------------------------------------------------------------------------
+
+    if secrets['WILDWEB_E']:
+        return input_int
 
     input_int_formatted = format_geo(input_int)
 
@@ -730,7 +802,7 @@ def nearby_cameras_url(inci_dict):
         for camera in json.load(camera_json)['cameras']:
             this_coords = (camera['lat'],camera['lon'])
             this_distance = geopy.distance.geodesic(
-                (convert_gps_to_decimal(inci_dict['x']),convert_gps_to_decimal(inci_dict['y'])),
+                (convert_gps_to_decimal(inci_dict['y']),convert_gps_to_decimal(inci_dict['x'])),
                 this_coords
             ).mi
 
@@ -829,7 +901,7 @@ def perform_cleanup(inci_list):
 
         for inci in db.all():
             if inci['id'] not in keep_inci_ids:
-                print("Delete: " + inci['id'])
+                logger.debug("Delete: %s", inci['id'])
                 db.remove(inci_db.id == inci['id'])
 
         return True

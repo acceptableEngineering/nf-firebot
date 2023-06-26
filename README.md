@@ -79,7 +79,9 @@ URL_SHORT=XXXX.X
 
 ### `.env` keys, defined
 The only required key is `NF_IDENTIFIER`. It is also the only value that is not meant to be kept secret, so keep the values of the other keys to yourself! Also, if you run NF-FireBot without any/all of the keys for a feature, it will just run without attempting to use that feature.
-- `NF_IDENTIFIER` (the only required key): Your national forest's identifier as found [on WildCAD](http://www.wildcad.net/WildCADWeb.asp)
+- `NF_IDENTIFIER` (required): Your national forest's identifier as found [on WildCAD](http://www.wildcad.net/WildCADWeb.asp)
+- `WILDWEB_E` (optional): Is your forest on the new WildWeb-E? Defaults to `False` (`wildcad.net`). If `True`, uses `wildwebe.net`
+- `NF_WWE_IDENTIFIER` (optional, required if `WILDWEB_E` is set): If your forest is using WildWeb-E, set its ID here
 - `TELEGRAM_BOT_ID` (optional): The ID of your Telegram bot (see below)
 - `TELEGRAM_BOT_SECRET` (optional): The Secret for your Telegram bot (see below)
 - `TELEGRAM_CHAT_ID` (optional): The Chat or User ID you want to post notifications to

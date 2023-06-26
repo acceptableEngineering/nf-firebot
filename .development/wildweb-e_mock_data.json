@@ -1,0 +1,2069 @@
+[
+    {
+        "data": [
+            {
+                "ic": "*******",
+                "date": "2023-06-24T21:47:01.124",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "0242a061-c5c8-4ebf-bc35-7b6e3d08fbe7",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1747",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1747\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T23:12:18.43",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "030fee32-eea6-4981-a42d-720baa37575d",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1749",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1749\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-01T02:58:28",
+                "name": "PHONE LINES- ECC",
+                "type": "Miscellaneous",
+                "uuid": "03e0a4ae-633f-464d-87a9-4f1000ef608f",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "7",
+                "fire_num": null,
+                "latitude": "34.738140",
+                "location": null,
+                "longitude": "118.217700",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"7\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T12:34:14.859",
+                "name": "CABIN INSPECTION",
+                "type": "Miscellaneous",
+                "uuid": "045009cb-04e4-435d-8699-7d9b8e5747e4",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1709",
+                "fire_num": null,
+                "latitude": "34.238579",
+                "location": null,
+                "longitude": "117.863503",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1709\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T11:58:06",
+                "name": "MEDICAL AID",
+                "type": "Medical Aid",
+                "uuid": "0462d1ce-5c5d-4ee3-8338-c36ac4a39294",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1692",
+                "fire_num": null,
+                "latitude": "34.366050",
+                "location": null,
+                "longitude": "117.652400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1692\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-05-28T16:53:59",
+                "name": "LIEBRE RX",
+                "type": "Prescribed Fire",
+                "uuid": "06a24d82-846a-41c7-b4b2-8b0babbfe08a",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1393",
+                "fire_num": null,
+                "latitude": "34.724380",
+                "location": null,
+                "longitude": "118.679200",
+                "resources": [
+                    null
+                ],
+                "webComment": "WFSE4423 - 0544",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1393\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-07T15:54:59",
+                "name": "CA-BDF-008228 SJRD THOMAS MNT RX BURN",
+                "type": "Resource Order",
+                "uuid": "0b01ee0d-45ee-4832-be06-00ba6c6dd59b",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1533",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    "CRW-2",
+                    "ENG-331",
+                    "ENG-338"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1533\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T19:52:26",
+                "name": "Castaic Park Interagency Drill",
+                "type": "Aircraft",
+                "uuid": "0bd9315b-d8aa-46dc-9b04-e291127d9167",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1701",
+                "fire_num": null,
+                "latitude": "34.526020",
+                "location": null,
+                "longitude": "118.586700",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1701\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T11:09:46.582",
+                "name": "ILLEGAL CAMP FIRE",
+                "type": "Miscellaneous",
+                "uuid": "130f9782-af1b-4127-a0bf-8079cb748aa7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1731",
+                "fire_num": null,
+                "latitude": "34.351700",
+                "location": null,
+                "longitude": "117.676300",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1731\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-23T09:19:27",
+                "name": "2023 NIGHT WATCH STAFFING",
+                "type": "Resource Order",
+                "uuid": "1315b48a-8146-45e7-bba0-628ed0cffc91",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "217",
+                "fire_num": null,
+                "latitude": "34.740960",
+                "location": null,
+                "longitude": "118.218400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"217\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-20T16:02:03",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "13981300-8094-45b5-9f48-a432a67a0d06",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1681",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1681\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-23T14:19:00.854",
+                "name": "ABANDONED VEHICLE",
+                "type": "Miscellaneous",
+                "uuid": "1a922699-f26c-4298-aa75-74d24f31f8fc",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1722",
+                "fire_num": null,
+                "latitude": "34.166870",
+                "location": null,
+                "longitude": "117.847900",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1722\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "CHRISTIAN BAUZO",
+                "date": "2023-06-16T11:20:30",
+                "name": "RIDGE",
+                "type": "Wildfire",
+                "uuid": "1c086cac-baf3-4b7e-a506-9eeb5e091f9f",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1626",
+                "fire_num": null,
+                "latitude": "34.752250",
+                "location": null,
+                "longitude": "118.720300",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1626\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T20:25:12.989",
+                "name": "TRAINING",
+                "type": "Wildfire",
+                "uuid": "1fd4fc2d-ff67-4bea-b88a-8facda553392",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1744",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1744\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T16:27:14",
+                "name": "CA-SDU-014677 WILDCAT2",
+                "type": "Resource Order",
+                "uuid": "204bec28-6ea2-4f7a-8147-af8e08748d63",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1683",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1683\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T17:45:09",
+                "name": "VEHICLE FIRE",
+                "type": "Vehicle Fire",
+                "uuid": "205ddcbc-0121-49d2-8926-d89681cd1a64",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1685",
+                "fire_num": null,
+                "latitude": "34.258570",
+                "location": null,
+                "longitude": "118.129600",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1685\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-21T16:58:59",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "217623a0-74be-415a-81cd-27de2655e184",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1696",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1696\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T13:42:12.64",
+                "name": "HANSEN",
+                "type": "Wildfire",
+                "uuid": "22d53ff0-5b52-4510-b77a-c8c6f4c11ca3",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1734",
+                "fire_num": null,
+                "latitude": "34.273367",
+                "location": null,
+                "longitude": "118.393583",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1734\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-10T10:51:12",
+                "name": "OR-DEF-000065 COFMS SUPPORT",
+                "type": "Resource Order",
+                "uuid": "2344312f-613d-4e71-99ba-699a1c97ad60",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1570",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    "PAT-35"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1570\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T13:55:16.411",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "240e816e-2688-4f40-8fb2-856f737dfe64",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1735",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1735\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-25T00:00:00",
+                "name": "DAILY STATUS",
+                "type": "Miscellaneous",
+                "uuid": "293bc6d3-5934-490e-8512-61747e560069",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1750",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1750\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-01T02:52:23",
+                "name": "EXTENDED STAFFING",
+                "type": "Miscellaneous",
+                "uuid": "2ac5d4e3-4d1b-49b0-97dc-b160a08c7d21",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "2",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"2\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-05-31T11:10:47",
+                "name": "2023 H-531 TRAINING / PROFICIENCY",
+                "type": "Resource Order",
+                "uuid": "2e4b0408-1397-474c-867a-795ca9a6b139",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1452",
+                "fire_num": null,
+                "latitude": "34.740960",
+                "location": "FOX FIELD",
+                "longitude": "118.218400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1452\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T00:00:00",
+                "name": "DAILY STATUS",
+                "type": "Miscellaneous",
+                "uuid": "2e4d4bc6-ca71-4855-a224-69ee14754576",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1688",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1688\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T15:21:24.122",
+                "name": "ILLEGAL CAMPFIRE",
+                "type": "Miscellaneous",
+                "uuid": "31de242b-4001-437a-ba96-3834db2ea00e",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1739",
+                "fire_num": null,
+                "latitude": "34.090830",
+                "location": null,
+                "longitude": "118.946501",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1739\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T14:23:54.108",
+                "name": "SLIP AND FALL",
+                "type": "Miscellaneous",
+                "uuid": "329824a9-c41e-4da5-9643-4627f79df948",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1736",
+                "fire_num": null,
+                "latitude": "34.378943",
+                "location": null,
+                "longitude": "117.689391",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1736\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-23T09:18:48",
+                "name": "2023 FIRE WATCH STAFFING",
+                "type": "Resource Order",
+                "uuid": "3362011d-407c-4228-bf08-70c868972a3c",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "216",
+                "fire_num": null,
+                "latitude": "34.740960",
+                "location": null,
+                "longitude": "118.218400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"216\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T12:52:47",
+                "name": "NON REPORTABLE FIRE",
+                "type": "Wildfire",
+                "uuid": "35178708-d990-419a-a645-5ca65c1c2da7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1679",
+                "fire_num": null,
+                "latitude": "34.566540",
+                "location": null,
+                "longitude": "118.685700",
+                "resources": [
+                    null
+                ],
+                "webComment": "P5EK1S-0501",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1679\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T17:49:35",
+                "name": "ABANDONED VEHICLE",
+                "type": "Miscellaneous",
+                "uuid": "396a2ac8-a7d2-4dbd-bda0-60c64aec207b",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1698",
+                "fire_num": null,
+                "latitude": "34.365620",
+                "location": null,
+                "longitude": "118.106000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1698\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-23T09:07:24",
+                "name": "2023 ANF/OSC PREPOSITION",
+                "type": "Resource Order",
+                "uuid": "3ffd7dd9-bab7-45ab-b39c-b789095aee2f",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "213",
+                "fire_num": null,
+                "latitude": "34.740960",
+                "location": null,
+                "longitude": "118.218400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"213\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-25T06:48:41.589",
+                "name": "training",
+                "type": "Miscellaneous",
+                "uuid": "442b1409-8b5f-4a08-a351-31774e13fba9",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1751",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1751\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T17:55:21",
+                "name": "NM-LCD-000284 RICO",
+                "type": "Resource Order",
+                "uuid": "4442509b-ced3-450a-bc28-da53a3d76a9c",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1699",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1699\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T10:42:46.736",
+                "name": "ABANDON CAMP FIRE",
+                "type": "Miscellaneous",
+                "uuid": "49574dbf-c03c-4cfd-be6f-42d263d8f3ac",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1727",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1727\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T14:54:03.124",
+                "name": "VIRGENES",
+                "type": "Wildfire",
+                "uuid": "4bb8ef04-ef80-43d7-9b9c-dcbee8eb70e4",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1713",
+                "fire_num": null,
+                "latitude": "34.136517",
+                "location": null,
+                "longitude": "118.701368",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1713\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-23T09:09:41.179",
+                "name": "SINGLE VEHICLE TC",
+                "type": "Traffic Collision",
+                "uuid": "4de201fa-3115-45fe-b306-79508d0ddaaa",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1717",
+                "fire_num": null,
+                "latitude": "34.222969",
+                "location": null,
+                "longitude": "118.190697",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1717\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T19:28:51.65",
+                "name": "OUTSIDE INV",
+                "type": "Miscellaneous",
+                "uuid": "4f9ce003-cc97-410b-bd66-9b5899d14f32",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1743",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1743\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "RX BB PEDRO MARRON",
+                "date": "2023-04-17T10:26:33",
+                "name": "CHILAO RX",
+                "type": "Prescribed Fire",
+                "uuid": "50c74c68-ae05-4e93-bddb-26f38f02c6ea",
+                "acres": "1",
+                "fuels": null,
+                "inc_num": "935",
+                "fire_num": null,
+                "latitude": "34.358180",
+                "location": null,
+                "longitude": "118.011600",
+                "resources": [
+                    null
+                ],
+                "webComment": "0544     WFSE4423",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"935\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-05-16T16:33:32",
+                "name": "CA-STF-000526 STF RX WCSL",
+                "type": "Resource Order",
+                "uuid": "55040d1c-17a0-49f7-9004-391f7fc82a50",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1232",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    "ENG-320"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1232\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T09:53:03",
+                "name": "AAZ FIRE",
+                "type": "Wildfire",
+                "uuid": "55bb99de-5fc6-4709-8a64-cb7fe2bbf152",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1690",
+                "fire_num": null,
+                "latitude": "34.458080",
+                "location": null,
+                "longitude": "118.565400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1690\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T10:11:50.267",
+                "name": "MEDICAL AID",
+                "type": "Miscellaneous",
+                "uuid": "590c9533-5efd-4109-8245-022c865ce480",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1706",
+                "fire_num": null,
+                "latitude": "34.207683",
+                "location": null,
+                "longitude": "118.147333",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1706\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T07:16:00.622",
+                "name": "DAILY STATUS",
+                "type": "Miscellaneous",
+                "uuid": "5c82244b-aae4-413d-b86b-f9ebe343e007",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1724",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1724\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T21:20:44.096",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "5d98ff41-866e-4cbf-bf1b-426b60a4d99c",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1746",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1746\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T09:00:39",
+                "name": "OUTSIDE INVESTIGATION",
+                "type": "Smoke Check",
+                "uuid": "6349d773-fff9-4711-8074-0bf0cc1ef22e",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1689",
+                "fire_num": null,
+                "latitude": "34.225070",
+                "location": null,
+                "longitude": "118.239400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1689\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-21T14:50:22",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "68474dc5-7c69-4673-b7f6-5b34bf091924",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1695",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1695\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T10:31:15.866",
+                "name": "SAR",
+                "type": "Search & Rescue",
+                "uuid": "6dec87ed-9e6d-471b-9d93-c81060b9987a",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1726",
+                "fire_num": null,
+                "latitude": "34.277778",
+                "location": null,
+                "longitude": "117.649444",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1726\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-23T10:43:31.825",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "6e27c77a-beab-4730-bc49-d9f92e9ea618",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1720",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1720\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-17T09:36:09",
+                "name": "CA-R05-000001  2023 REGIONAL CISM SUPPOR",
+                "type": "Resource Order",
+                "uuid": "7edb83bc-93de-4135-9361-e93f67187e4a",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1642",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1642\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-22T16:14:08.56",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "7ef7af06-012c-419a-9a5a-2ad5ee8afa84",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1714",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1714\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T16:22:53",
+                "name": "AAZ FIRE",
+                "type": "Miscellaneous",
+                "uuid": "806bab3c-d1a8-4d12-9f21-bfdc8a7dcac6",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "9",
+                "fire_num": null,
+                "latitude": "34.102140",
+                "location": null,
+                "longitude": "118.756500",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"9\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-16T18:20:27",
+                "name": "CA-PNF- 000002  2023 PNF SUPPORT",
+                "type": "Resource Order",
+                "uuid": "8092d375-0fed-45a2-936c-1e68748fc3f5",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1634",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1634\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-22T10:19:30.261",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "8182a9a5-b7b6-4b7c-8e48-de2c1356aaed",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1707",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1707\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-20T10:07:37",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "81bc740c-4cc3-4c81-b6f5-0d96e9c68e3a",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1678",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1678\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-20T21:11:28",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "857ed1aa-6bf5-4de4-b74e-d2b03de601bc",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1687",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1687\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T13:42:31",
+                "name": "POSSIBLE MISSING HIKER",
+                "type": "Search & Rescue",
+                "uuid": "8a05c615-740a-4fb6-8d79-3c34161a8a23",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1694",
+                "fire_num": null,
+                "latitude": "34.266670",
+                "location": null,
+                "longitude": "118.142100",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1694\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-25T06:57:35.04",
+                "name": "TRAINING",
+                "type": "Wildfire",
+                "uuid": "8bb1cf92-bc9c-4341-94eb-b5d1ffb37461",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1753",
+                "fire_num": null,
+                "latitude": "34.239500",
+                "location": null,
+                "longitude": "117.851000",
+                "resources": [
+                    "AA-51"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1753\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-01T02:58:01",
+                "name": "2023 ROAD CONDITIONS",
+                "type": "Miscellaneous",
+                "uuid": "8e4118f9-c16d-4620-b5f8-e875b96136d4",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "6",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"6\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-23T07:12:39.776",
+                "name": "DAILY STATUS",
+                "type": "Miscellaneous",
+                "uuid": "8e687368-70b4-46ad-a2f4-c227ac18c926",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1715",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1715\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T21:05:00",
+                "name": "GRACE",
+                "type": "Vehicle Fire",
+                "uuid": "92075109-c6c3-4856-a46c-ada808274992",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1719",
+                "fire_num": null,
+                "latitude": "34.573001",
+                "location": "",
+                "longitude": "118.695012",
+                "resources": [
+                    null
+                ],
+                "webComment": "SO# 22... RD 16... ",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1719\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T17:09:13.924",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "921f93ea-328a-4cc4-933a-f225812a77f7",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1741",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1741\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-21T17:57:30",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "929763c1-97f2-49ff-8e01-128f2608460a",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1700",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1700\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T12:00:00",
+                "name": "TRAINING",
+                "type": "Wildfire",
+                "uuid": "9cbc815d-3c4f-4134-97dc-b7d4d31d124e",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1708",
+                "fire_num": null,
+                "latitude": "34.252433",
+                "location": null,
+                "longitude": "118.196717",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1708\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-12T13:29:05",
+                "name": "2023 CA-SMO-OJT",
+                "type": "Miscellaneous",
+                "uuid": "9d13483a-d2ce-4d5e-9fc8-59080545da49",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "6",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"6\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-16T16:41:10",
+                "name": "FY23 ANF CISM SUPPORT INCIDENT",
+                "type": "Resource Order",
+                "uuid": "9ed0d19e-2987-44d5-8583-946521456705",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1632",
+                "fire_num": null,
+                "latitude": "34.145360",
+                "location": null,
+                "longitude": "118.034600",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1632\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T14:50:43.846",
+                "name": "VEHICLE RECOVERY",
+                "type": "Miscellaneous",
+                "uuid": "a250e865-9251-4625-954e-c467fe4f37a1",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1712",
+                "fire_num": null,
+                "latitude": "34.199169",
+                "location": null,
+                "longitude": "117.841499",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1712\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "BC34",
+                "date": "2023-06-19T17:06:55",
+                "name": "CLEAR CREEK RX",
+                "type": "Prescribed Fire",
+                "uuid": "a54281c1-5f84-461a-99fa-307802ae7472",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1673",
+                "fire_num": null,
+                "latitude": "34.272560",
+                "location": null,
+                "longitude": "118.160400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1673\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-18T09:01:51",
+                "name": "FORK FIRE",
+                "type": "Wildfire",
+                "uuid": "a6514c8f-3c24-445d-8236-86dc65f83713",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1661",
+                "fire_num": null,
+                "latitude": "34.203980",
+                "location": "34 10.719        117 40.483",
+                "longitude": "117.808800",
+                "resources": [
+                    null
+                ],
+                "webComment": "RD # 3     SO#21    P9XH",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1661\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T14:40:28.916",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "a6be3d4b-6861-41d8-b777-f47e913338c8",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1737",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1737\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-18T10:59:00",
+                "name": "EVENT - 6/23 - 25",
+                "type": "Miscellaneous",
+                "uuid": "a8409289-9a64-4d41-8f78-b9111ef6f841",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1662",
+                "fire_num": null,
+                "latitude": "34.386940",
+                "location": "MT GLEASON",
+                "longitude": "118.174700",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1662\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T15:30:15.98",
+                "name": "AZ-AZS-230002 DFFM PREPAREDNESS",
+                "type": "Resource Order",
+                "uuid": "a98168ac-98f2-470c-bd04-24b387db3d81",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1740",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1740\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T12:21:00",
+                "name": "VEHICLE FIRE",
+                "type": "Vehicle Fire",
+                "uuid": "abfd8492-b5c8-4cfe-b03c-f1ee305a67f7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1710",
+                "fire_num": null,
+                "latitude": "34.490300",
+                "location": null,
+                "longitude": "118.285503",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1710\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T11:32:01.493",
+                "name": "MEDICAL AID",
+                "type": "Medical Aid",
+                "uuid": "ad2c645f-c46f-4a10-a24e-1434c4dea197",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1732",
+                "fire_num": null,
+                "latitude": "34.218967",
+                "location": null,
+                "longitude": "118.141233",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1732\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T22:32:00.12",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "addc0368-af81-4704-ba69-5f3b5788d350",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1748",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1748\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-24T11:05:48.518",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "b0f0fd97-6205-4da6-b0e0-12d3584372c6",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1730",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1730\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-01T02:56:29",
+                "name": "2023 ANF SUPPORT",
+                "type": "Miscellaneous",
+                "uuid": "b1a67ca7-48c8-4177-a188-ccf204dd0687",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "4",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": "",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"4\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-23T19:08:07.589",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "b2f053ec-7e91-4c36-bf82-a14bff5c7123",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1723",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1723\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-21T17:32:40",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "b399cf68-8eab-4ea5-abeb-9b08632c9f7d",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1697",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1697\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T17:15:24.634",
+                "name": "ON FOOT-PT 22",
+                "type": "Miscellaneous",
+                "uuid": "b564e9fa-8ed6-49ee-ba96-f9faa94448b7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1742",
+                "fire_num": null,
+                "latitude": "34.324254",
+                "location": null,
+                "longitude": "117.834461",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1742\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T21:12:45.099",
+                "name": "LOST HIKER",
+                "type": "Search & Rescue",
+                "uuid": "b5d40c57-dc3e-426f-8bcc-a79a5e44eca1",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1745",
+                "fire_num": null,
+                "latitude": "34.339817",
+                "location": null,
+                "longitude": "117.652667",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1745\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-01T11:42:00",
+                "name": "JUNE FLIGHT FOLLOWING",
+                "type": "Aircraft",
+                "uuid": "b8c44be7-360a-4bc7-a022-6a550e2d39c7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1465",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1465\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-15T10:40:18",
+                "name": "ABANDON VEHICLE",
+                "type": "Miscellaneous",
+                "uuid": "bd0815e5-98c2-462c-af48-9bb68ae6a263",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1618",
+                "fire_num": null,
+                "latitude": "34.386130",
+                "location": null,
+                "longitude": "118.315700",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1618\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T14:30:26",
+                "name": "CA-SQF-000175 INDIAN BASIN RX",
+                "type": "Resource Order",
+                "uuid": "c2a8bfb4-01e7-48ed-8994-e42096584cb7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1680",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1680\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-25T08:12:42.541",
+                "name": "FILMING - 6/26",
+                "type": "Miscellaneous",
+                "uuid": "c7ff0460-cd91-4d70-b8a3-5ea0bb893ba8",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1754",
+                "fire_num": null,
+                "latitude": "34.663371",
+                "location": "PYRAMID LAKE AND VAQUERO BEACH",
+                "longitude": "118.764267",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1754\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-10T12:28:58",
+                "name": "QC-QCN-000001 2023 SUPPORT TO QUEBEC",
+                "type": "Resource Order",
+                "uuid": "c95369e4-3aea-4231-8788-09f600e5cd4a",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1573",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1573\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T14:54:43.122",
+                "name": "ILLEGAL CAMPFIRE",
+                "type": "Miscellaneous",
+                "uuid": "cb1cbcaa-2e86-4a88-b5df-ca3636a1d833",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1738",
+                "fire_num": null,
+                "latitude": "34.263069",
+                "location": null,
+                "longitude": "117.844498",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1738\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T16:05:38",
+                "name": "NON REPORTABLE FIRE",
+                "type": "Wildfire",
+                "uuid": "cb85fe25-e104-4b4e-ad24-c18c957f0c7f",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1682",
+                "fire_num": null,
+                "latitude": "34.270570",
+                "location": "34 16.303        118 23.102",
+                "longitude": "118.380600",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1682\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T00:00:00",
+                "name": "DAILY STATUS",
+                "type": "Miscellaneous",
+                "uuid": "ccb416f9-6ceb-4192-8c93-56fcb16f547d",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1702",
+                "fire_num": null,
+                "latitude": "34.341350",
+                "location": null,
+                "longitude": "118.109452",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1702\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "RXBB-BC.34",
+                "date": "2023-05-03T07:19:24",
+                "name": "BIG PINES RX",
+                "type": "Prescribed Fire",
+                "uuid": "ce11ca97-cfc8-4dd7-b950-4ca19a8f3441",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1106",
+                "fire_num": null,
+                "latitude": "34.365700",
+                "location": null,
+                "longitude": "117.697900",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1106\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-16T16:35:18",
+                "name": "CA-YNP-000044   PW27RX",
+                "type": "Resource Order",
+                "uuid": "d2c6f278-bdd9-44bf-847d-2bbd78087da7",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "8",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"8\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T08:38:00",
+                "name": "2 CAR TC",
+                "type": "Traffic Collision",
+                "uuid": "d3154a13-0667-4b66-901a-d3780d9e71be",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1705",
+                "fire_num": null,
+                "latitude": "34.528633",
+                "location": null,
+                "longitude": "118.091533",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1705\", \"fire_code\": null, \"wfdssunit\": null, \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-16T09:50:14",
+                "name": "CA-SRF-000542 2023 FIRE WATCH RECON",
+                "type": "Resource Order",
+                "uuid": "e47b1406-7f79-4a05-b28c-c1b5b0788fdc",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1625",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1625\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T11:01:32.159",
+                "name": "MEDICAL AID",
+                "type": "Medical Aid",
+                "uuid": "e4a8478a-c42c-4230-8b44-5169ef3cebb5",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1728",
+                "fire_num": null,
+                "latitude": "34.303633",
+                "location": null,
+                "longitude": "118.258183",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1728\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T10:06:36.697",
+                "name": "CA-PNF-000017 2023 PNF RX",
+                "type": "Resource Order",
+                "uuid": "e4c975c6-ad77-47ab-ad46-9a6c1481fec8",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1725",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1725\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-23T09:13:00",
+                "name": "ANF ABC MISC",
+                "type": "Resource Order",
+                "uuid": "e5bd434d-83b0-4821-ba59-4c4de7950299",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "215",
+                "fire_num": null,
+                "latitude": "34.740960",
+                "location": null,
+                "longitude": "118.218400",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"215\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-23T13:26:14.49",
+                "name": "CABIN INSPECTION",
+                "type": "Miscellaneous",
+                "uuid": "e6fbbca9-eeb0-432e-9a79-64c2407a9ecc",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1721",
+                "fire_num": null,
+                "latitude": "34.257930",
+                "location": "",
+                "longitude": "117.639226",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1721\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T13:12:25",
+                "name": "CABIN INSPECTION",
+                "type": "Miscellaneous",
+                "uuid": "e91f69ff-251b-4f61-82cd-5f3b3e4b0a38",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1693",
+                "fire_num": null,
+                "latitude": "34.287670",
+                "location": null,
+                "longitude": "117.843300",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1693\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-21T11:29:09",
+                "name": "CA-RRU- 089804  VIPER",
+                "type": "Resource Order",
+                "uuid": "e9a24db6-24be-4b63-aa15-54dc2e44d3bf",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1691",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1691\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-24T12:03:29.283",
+                "name": "MEDICAL AID",
+                "type": "Medical Aid",
+                "uuid": "eb3a19a7-9165-4231-903d-4eacfc2808a1",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1733",
+                "fire_num": null,
+                "latitude": "34.273600",
+                "location": null,
+                "longitude": "118.211000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1733\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-22T13:37:10.214",
+                "name": "CUT LOCK",
+                "type": "Miscellaneous",
+                "uuid": "ed58fee5-823c-4b01-b894-464af9e01c50",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1711",
+                "fire_num": null,
+                "latitude": "34.559400",
+                "location": null,
+                "longitude": "118.532000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1711\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-20T17:39:41",
+                "name": "PUBLIC ASSIST",
+                "type": "Public Assist",
+                "uuid": "f01354bb-5eb4-4c89-8db5-09441d4c8578",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1684",
+                "fire_num": null,
+                "latitude": "34.618370",
+                "location": null,
+                "longitude": "118.397600",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1684\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-01-01T02:56:03",
+                "name": "NIGHT DUTY OFFICERS",
+                "type": "Miscellaneous",
+                "uuid": "f2f7eef5-8b90-4394-a363-9737029bc067",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "3",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"3\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-25T06:49:06.21",
+                "name": "training",
+                "type": "Complex",
+                "uuid": "f3bd4979-6bde-4c4f-9f84-8dee06615e00",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "1752",
+                "fire_num": null,
+                "latitude": null,
+                "location": null,
+                "longitude": null,
+                "resources": [
+                    null
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"1752\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": "*******",
+                "date": "2023-06-20T18:02:19",
+                "name": "*******",
+                "type": "Law Enforcement",
+                "uuid": "f3bde660-ebb8-4112-889d-a5b1660e0fba",
+                "acres": "*******",
+                "fuels": "*******",
+                "inc_num": "1686",
+                "fire_num": "*******",
+                "latitude": "*******",
+                "location": "*******",
+                "longitude": "*******",
+                "resources": [
+                    "*******"
+                ],
+                "webComment": null,
+                "fire_status": "{\"out\": \"*******\", \"contain\": \"*******\", \"control\": \"*******\"}",
+                "fiscal_data": "{\"inc_num\": \"1686\", \"fire_code\": null, \"wfdssunit\": \"CAANF\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            },
+            {
+                "ic": null,
+                "date": "2023-06-12T13:30:40",
+                "name": "2023 SAMO JUNTEENTH STEP UP",
+                "type": "Miscellaneous",
+                "uuid": "fa524b1c-81fc-4490-a038-a3035a572ad4",
+                "acres": null,
+                "fuels": null,
+                "inc_num": "7",
+                "fire_num": null,
+                "latitude": "0.000000",
+                "location": null,
+                "longitude": "0.000000",
+                "resources": [
+                    null
+                ],
+                "webComment": "PPP9MK",
+                "fire_status": "{\"out\": null, \"contain\": null, \"control\": null}",
+                "fiscal_data": "{\"inc_num\": \"7\", \"fire_code\": null, \"wfdssunit\": \"CASMP\", \"fs_job_code\": null, \"fs_override\": null, \"fiscal_comments\": null, \"state_fiscal_code\": null}"
+            }
+        ],
+        "retrieved": "2023-06-25T15:49:02.502282"
+    }
+]
