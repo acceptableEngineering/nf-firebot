@@ -209,9 +209,14 @@ def process_wildcad():
     for item in data:
         counter = counter + 1
         if secrets['WILDWEB_E']:
+            this_fiscal_data = json.loads(item['fiscal_data'])
+
+            if this_fiscal_data['wfdssunit'] is None:
+                this_fiscal_data['wfdssunit'] = 'N/A'
+
             item_dict = {
                 'time_created': empty_fill(item['date']), # "date" field
-                'id': empty_fill(secrets['NF_IDENTIFIER'] + item['inc_num']), # Modified "inc_num" field
+                'id': empty_fill(this_fiscal_data['wfdssunit'] + '-' + this_fiscal_data['inc_num']), # Modified "inc_num" field
                 'name': empty_fill(item['name']), # "name" field
                 'type': empty_fill(item['type']), # "type" field
                 'comment': empty_fill(item['webComment']), # "webComment" field
