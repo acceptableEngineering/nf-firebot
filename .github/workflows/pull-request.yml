@@ -22,6 +22,8 @@ jobs:
       run: |
         cat <<EOT > .env
         NF_IDENTIFIER=ANF
+        WILDWEB_E=True
+        NF_WWE_IDENTIFIER=caancc
         TELEGRAM_BOT_ID=False
         TELEGRAM_BOT_SECRET=False
         TELEGRAM_CHAT_ID=False
@@ -42,6 +44,8 @@ jobs:
       run: |
         cat <<EOT > .env
         NF_IDENTIFIER=${NF_IDENTIFIER}
+        WILDWEB_E=True
+        NF_WWE_IDENTIFIER=caancc
         TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
         TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
