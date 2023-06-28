@@ -489,7 +489,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
 
         if nearby_cameras:
             notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
-                'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+                ' Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
@@ -528,7 +528,7 @@ def generate_notif_body(inci_dict):
 
         if nearby_cameras:
             notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
-                'Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+                ' Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
     return notif_body
 
