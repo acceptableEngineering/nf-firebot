@@ -171,7 +171,7 @@ def process_wildcad():
                 page = file.read()
     else:
         try:
-            page = requests.get(config['wildcad_url'], verify=False)
+            page = requests.get(config['wildcad_url'])
         except requests.exceptions.RequestException as error:
             logger.error('Could not reach Wildcad URL %s', config['wildcad_url'])
             logger.error(error)
