@@ -71,6 +71,7 @@ python3 firebot.py
 Create a `.env` file with your National Forest ID and secret values. You can use one set of settings in a Production environment, and one locally.
 ```
 NF_IDENTIFIER=ANF
+BROADCASTIFY_ID=25757
 WILDWEB_E=True
 NF_WWE_IDENTIFIER=caancc
 TELEGRAM_BOT_ID=botXXXXXXXXXX
@@ -84,18 +85,20 @@ URL_SHORT=XXXX.X
 
 ### `.env` keys, defined
 The only required key is `NF_IDENTIFIER`. It is also the only value that is not meant to be kept secret, so keep the values of the other keys to yourself! Also, if you run NF-FireBot without any/all of the keys for a feature, it will just run without attempting to use that feature.
-- `NF_IDENTIFIER` (required): Your national forest's identifier as found [on WildCAD](http://www.wildcad.net/WildCADWeb.asp)
-- `WILDWEB_E` (optional): Is your forest on the new WildWeb-E? Defaults to `False` (`wildcad.net`). If `True`, uses `wildwebe.net`
-- `NF_WWE_IDENTIFIER` (optional, required if `WILDWEB_E` is set): If your forest is using WildWeb-E, set its ID here
-- `TELEGRAM_BOT_ID` (optional): The ID of your Telegram bot (see below)
-- `TELEGRAM_BOT_SECRET` (optional): The Secret for your Telegram bot (see below)
-- `TELEGRAM_CHAT_ID` (optional): The Chat or User ID you want to post notifications to
-    - Channel example: `@MyForestFireBot`
-    - User DM example: `123456789`
-- `TWILIO_SID` (optional): Your secret Twilio String Identifier, found in your Twilio dashboard
-- `TWILIO_AUTH_TOKEN` (optional): Your secret Twilio API Auth Token, found in your Twilio dashboard
-- `TWILIO_NUMBER` (optional): Your Twilio-registered phone number (EG: `+18184567890`)
-- `URL_SHORT` (optional): The domain name you want to use as a URL shortener in SMS. (EG: `lm7.us`)
+
+| Key Name              | Required | Type    | Description | Example |
+| --------------------- | -------- | ------- | ----------- | ------- |
+| `NF_IDENTIFIER`       | Y        | string  | Your national forest's identifier as found [on WildCAD](http://www.wildcad.net/WildCADWeb.asp) | `ANF` |
+| `BROADCASTIFY_ID`     | N        | int     | If your national forest's dispatch audio is listed on Broadcastify, enter the stream ID here. You can obtain that from the URL (EG: https://www.broadcastify.com/listen/feed/**25757**) | `25757` |
+| `WILDWEB_E`           | N        | boolean | Is your forest on the new WildWeb-E? Defaults to `False` (`wildcad.net`). If `True`, uses `wildwebe.net`   | `True` |
+| `NF_WWE_IDENTIFIER`   | N        | string  | Required if `WILDWEB_E` is set. If your forest is using WildWeb-E, set its ID here | `caancc` |
+| `TELEGRAM_BOT_ID`     | N        | string  | The ID of your Telegram bot (see below) | `bot1234567890` |
+| `TELEGRAM_BOT_SECRET` | N        | string  | The secret of your Telegram bot (see below) | `1234567-123456789012345` |
+| `TELEGRAM_CHAT_ID`    | N        | string  | The Chat or User ID you want to post notifications to | `@MyPublicChannel` |
+| `TWILIO_SID`          | N        | string  | Your secret Twilio String Identifier, found in your Twilio dashboard | N/A |
+| `TWILIO_AUTH_TOKEN`   | N        | string  | Your secret Twilio API Auth Token, found in your Twilio dashboard | N/A |
+| `TWILIO_NUMBER`       | N        | string  | Your Twilio-registered phone number | `+18184567890` |
+| `URL_SHORT`           | N        | string  | The domain name you want to use as a URL shortener in SMS | `lm7.us` |
 
 ### Setup: Telegram (Optional)
 Read about how to setup up a Telegram channel and bot/credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
