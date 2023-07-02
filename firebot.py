@@ -475,21 +475,28 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
             send_maps_link = True
 
     if send_maps_link is True:
-        notif_body += '\nTools:' + \
-            '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True)  + ' - ' + \
-            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
-            ' - ' + create_adsbex_url(inci_dict, True)
-
-        notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
-            str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
-            empty_fill(str(convert_gps_to_decimal(inci_dict['x'])) + ', ' + \
-            str(convert_gps_to_decimal(inci_dict['y']))) + '</em>'
+        notif_body += '\nTools:<em>'
 
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' + \
-                ' Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+            notif_body += '\n• <a href="' + nearby_cameras['url'] + '">ALERT Wildfire Webcams' + \
+                ' within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+
+        if secrets['BROADCASTIFY_ID']:
+            notif_body += '\n• <a href="https://www.broadcastify.com/listen/feed/' + \
+                str(secrets['BROADCASTIFY_ID']) + '">Broadcastify Stream</a>'
+
+        notif_body += '\n• Lat/Long (DDM): ' + empty_fill(str(inci_dict['y']) + ', ' + \
+            str(inci_dict['x'])) + '\n• Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['y'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['x'])))
+
+        notif_body += '\n• Maps: ' + create_google_maps_url(inci_dict, True)  + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
+
+        notif_body += '</em>'
 
     return notif_body
 
@@ -513,22 +520,29 @@ def generate_notif_body(inci_dict):
     if 'location' in inci_dict:
         notif_body += '\nLocation: ' + empty_fill(inci_dict['location'])
 
+    notif_body += '\nTools:<em>'
+
+    if secrets['BROADCASTIFY_ID']:
+        notif_body += '\n• <a href="https://www.broadcastify.com/listen/feed/' + \
+            str(secrets['BROADCASTIFY_ID']) + '">Broadcastify Stream</a>'
+
     if 'x' in inci_dict and 'y' in inci_dict:
-        notif_body += '\nTools:' + \
-            '\n   <em>Maps: ' + create_google_maps_url(inci_dict, True) + ' - ' + \
-            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
-            ' - ' + create_adsbex_url(inci_dict, True)
-
-        notif_body += '\n   Lat/Long (DDM): ' + empty_fill(str(inci_dict['x']) + ', ' + \
-            str(inci_dict['y'])) + '\n   Lat/Long (DD):    ' + \
-            empty_fill(str(convert_gps_to_decimal(inci_dict['y'])) + ', ' + \
-            str(convert_gps_to_decimal(inci_dict['x']))) + '</em>'
-
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n   <a href="' + nearby_cameras['url'] + '"><em>ALERT Wildfire</em>' +\
-                ' Webcams within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+            notif_body += '\n• <a href="' + nearby_cameras['url'] + '">ALERT Wildfire Webcams' +\
+                ' within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+
+        notif_body += '\n• Lat/Long (DDM): ' + empty_fill(str(inci_dict['y']) + ', ' + \
+            str(inci_dict['x'])) + '\n• Lat/Long (DD):    ' + \
+            empty_fill(str(convert_gps_to_decimal(inci_dict['y'])) + ', ' + \
+            str(convert_gps_to_decimal(inci_dict['x'])))
+
+        notif_body += '\n• Maps: ' + create_google_maps_url(inci_dict, True) + ' - ' + \
+            create_applemaps_url(inci_dict, True) + ' - ' + create_waze_url(inci_dict, True) + \
+            ' - ' + create_adsbex_url(inci_dict, True)
+
+    notif_body += '</em>'
 
     return notif_body
 
