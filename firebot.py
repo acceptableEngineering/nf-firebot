@@ -483,7 +483,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
             notif_body += '\n• <a href="' + nearby_cameras['url'] + '">ALERT Wildfire Webcams' + \
                 ' within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
 
-        if secrets['BROADCASTIFY_ID']:
+        if 'BROADCASTIFY_ID' in secrets:
             notif_body += '\n• <a href="https://www.broadcastify.com/listen/feed/' + \
                 str(secrets['BROADCASTIFY_ID']) + '">Broadcastify Stream</a>'
 
@@ -522,7 +522,7 @@ def generate_notif_body(inci_dict):
 
     notif_body += '\nTools:<em>'
 
-    if secrets['BROADCASTIFY_ID']:
+    if 'BROADCASTIFY_ID' in secrets:
         notif_body += '\n• <a href="https://www.broadcastify.com/listen/feed/' + \
             str(secrets['BROADCASTIFY_ID']) + '">Broadcastify Stream</a>'
 
