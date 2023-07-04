@@ -333,8 +333,11 @@ def is_fire(inci_dict):
     if(
         (
             'FIRE' in inci_dict['type'].strip().upper()
-            or 'FIRE' in inci_dict['type'].strip().upper()
+            or 'FIRE' in inci_dict['name'].strip().upper()
             or 'SMOKE' in inci_dict['name'].strip().upper()
+            or 'SMOKE' in inci_dict['type'].strip().upper()
+            or 'COMPLEX' in inci_dict['name'].strip().upper()
+            or 'COMPLEX' in inci_dict['type'].strip().upper()
         )
         and
         (
