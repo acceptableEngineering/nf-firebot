@@ -1,7 +1,7 @@
 # National Forest FireBot
 A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings to a given Telegram channel (optional). An SMS/text messaging component provides a self-service portal for end-users via a web server (optional). SMS messages are sent via Twilio.
 
-[![Automated Tests](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml/badge.svg)](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml)
+[![Automated Tests](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml/badge.svg?branch=main)](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml)
 
 ---
 
