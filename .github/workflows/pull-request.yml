@@ -40,9 +40,6 @@ jobs:
         TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
         TELEGRAM_BOT_SECRET: ${{ secrets.TELEGRAM_BOT_SECRET }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        TWILIO_SID: ${{ secrets.TWILIO_SID }}
-        TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-        TWILIO_NUMBER: ${{ secrets.TWILIO_NUMBER }}
         URL_SHORT: ${{ secrets.URL_SHORT }}
       run: |
         cat <<EOT > .env
@@ -52,9 +49,6 @@ jobs:
         TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
         TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
-        TWILIO_SID=${TWILIO_SID}
-        TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
-        TWILIO_NUMBER=${TWILIO_NUMBER}
         URL_SHORT=${URL_SHORT}
         EOT
     - name: Setup Faux Contacts DB
