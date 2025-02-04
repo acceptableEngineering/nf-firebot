@@ -14,7 +14,6 @@ import os
 import sys
 import json
 import re
-import geopy.distance
 import json_log_formatter
 import requests
 import tinydb
@@ -405,7 +404,7 @@ def generate_plain_initial_notif_body(inci_dict):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
+            notif_body += '\n- Nearby Cams: ' + shorten_url(nearby_cameras)
 
     return notif_body
 
@@ -443,7 +442,7 @@ def generate_plain_diff_body(inci_dict, event_changes):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n- Cams within 8 mi.: ' + shorten_url(nearby_cameras['url'])
+            notif_body += '\n- Nearby Cams: ' + shorten_url(nearby_cameras)
 
     return notif_body
 
@@ -483,8 +482,7 @@ def generate_rich_diff_body(inci_dict, inci_db_entry, event_changes):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n• <a href="' + nearby_cameras['url'] + '">ALERT Wildfire Webcams' + \
-                ' within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+            notif_body += '\n• <a href="' + nearby_cameras + '">ALERTCalifornia Webcams</a>'
 
         if 'BROADCASTIFY_ID' in secrets:
             notif_body += '\n• <a href="https://www.broadcastify.com/listen/feed/' + \
@@ -533,8 +531,7 @@ def generate_notif_body(inci_dict):
         nearby_cameras = nearby_cameras_url(inci_dict)
 
         if nearby_cameras:
-            notif_body += '\n• <a href="' + nearby_cameras['url'] + '">ALERT Wildfire Webcams' +\
-                ' within 8 mi. (' + nearby_cameras['count'] + ' cams)</a>'
+            notif_body += '\n• <a href="' + nearby_cameras + '">ALERTCalifornia Webcams</a>'
 
         notif_body += '\n• Lat/Long (DDM): ' + empty_fill(str(inci_dict['y']) + ', ' + \
             str(inci_dict['x'])) + '\n• Lat/Long (DD):    ' + \
@@ -805,40 +802,11 @@ def process_daily_recap():
 
 def nearby_cameras_url(inci_dict):
     """
-    When given a dict with lat/long ('x','y') determines if there are any
-    wildfire cameras within 8 miles, and returns a URL showing any matches
+    When given a dict with lat/long ('x','y') structures an alertcalifornia URL
     """
-    if os.path.exists('./extras/alertca_processed.json') is False:
-        logger.error('No webcam manifest exists, skipping identify_nearby_cameras()')
-        return False
-
-    camera_url = 'https://alertca.live/tileset?camIds='
-    match_count = 0
-
-    with open('./extras/alertca_processed.json', encoding='utf8') as camera_json:
-        for camera in json.load(camera_json)['cameras']:
-            this_coords = (camera['lat'],camera['lon'])
-            this_distance = geopy.distance.geodesic(
-                (convert_gps_to_decimal(inci_dict['y']),convert_gps_to_decimal(inci_dict['x'])),
-                this_coords
-            ).mi
-
-            if this_distance <= 8:
-                match_count += 1
-                camera['distance'] = this_distance
-
-                if match_count == 1:
-                    prefix = ''
-                else:
-                    prefix = ','
-
-                camera_url += prefix + str(camera['id'])
-
-        if match_count > 0:
-            return {
-                "url": camera_url,
-                "count": str(match_count)
-            }
+    if 'x'  in inci_dict and 'y' in inci_dict:
+        return 'https://cameras.alertcalifornia.org/?pos=' + str(inci_dict['y']) + '_' + \
+            str(inci_dict['x']) + '_11'
 
     return False
 
