@@ -62,9 +62,11 @@ Assumes you have Python3 and pip3 installed already.
 ```
 git clone git@github.com:acceptableEngineering/nf-firebot.git
 cd nf-firebot
-pip3 install -r requirements.txt
+python3 -m venv dev_env
+source dev_env/bin/activate
+pip install -r requirements.txt
 echo 'NF_IDENTIFIER=ANF' >> .env
-python3 firebot.py
+python3 ./firebot.py
 ```
 
 ### Option #2: Customized Setup
