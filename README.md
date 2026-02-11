@@ -1,12 +1,16 @@
 # National Forest FireBot
-A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings to a given Telegram channel (optional). An SMS/text messaging component provides a self-service portal for end-users via a web server (optional). SMS messages are sent via Twilio.
 
 [![Automated Tests](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml/badge.svg?branch=main)](https://github.com/acceptableEngineering/nf-firebot/actions/workflows/pull-request.yml)
+
+A Python script that scrapes incidents for any National Forest using WildCAD's "WildWeb" feature, and posts fire-related findings to a given Telegram channel (optional). An SMS/text messaging component provides a self-service portal for end-users via a web server (optional). SMS messages are sent via Twilio.
 
 ---
 
 ## Live Demo / Real-World Usage
-This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. At the time of this writing, 136 people are making use of it, many of whom are wildland firefighters in our local national forest. You can see "ANF FireBot" in action here:
+
+[![Monitoring](https://status.landmark717.com/api/badge/17/status)](https://status.landmark717.com/status/anf-firebot)
+
+This code and GitHub project were created after meeting my own needs for monitoring action in Angeles National Forest. At the time of this writing, ~500 people are making use of it, many of whom are wildland firefighters in our local national forest. You can see "ANF FireBot" in action here:
 https://t.me/firebotanf
 
 And read more about it here:
