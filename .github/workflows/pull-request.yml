@@ -43,6 +43,7 @@ jobs:
         cat <<EOT > .env
         NF_IDENTIFIER=${NF_IDENTIFIER}
         WILDWEB_E=True
+        CHP_ENABLED=True
         NF_WWE_IDENTIFIER=caancc
         TELEGRAM_BOT_ID=${TELEGRAM_BOT_ID}
         TELEGRAM_BOT_SECRET=${TELEGRAM_BOT_SECRET}
