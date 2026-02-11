@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<State>
+  <Center ID="LACC">
+    <Dispatch ID="LAHB">
+      <Log ID="260211LA0042">
+        <LogTime>"Feb 11 2026  2:30PM"</LogTime>
+        <LogType>"1125-Traffic Hazard"</LogType>
+        <Location>"I5 N / SR14 N"</Location>
+        <LocationDesc>"NB I5 AT SR14 CONNECTOR"</LocationDesc>
+        <Area>"Newhall"</Area>
+        <ThomasBrothers>""</ThomasBrothers>
+        <LATLON>"34326000:118470000"</LATLON>
+        <LogDetails>
+          <details>
+            <DetailTime>"Feb 11 2026  2:31PM"</DetailTime>
+            <IncidentDetail>"[1] SMOKE AND FLAMES VISIBLE FROM ROADWAY"</IncidentDetail>
+          </details>
+          <details>
+            <DetailTime>"Feb 11 2026  2:35PM"</DetailTime>
+            <IncidentDetail>"[2] LANE 1 BLOCKED DUE TO FIRE ACTIVITY"</IncidentDetail>
+          </details>
+          <units>
+            <UnitTime>"Feb 11 2026  2:32PM"</UnitTime>
+            <UnitDetail>"Unit Assigned"</UnitDetail>
+          </units>
+          <units>
+            <UnitTime>"Feb 11 2026  2:40PM"</UnitTime>
+            <UnitDetail>"Unit At Scene"</UnitDetail>
+          </units>
+        </LogDetails>
+      </Log>
+      <Log ID="260211LA0099">
+        <LogTime>"Feb 11 2026  1:15PM"</LogTime>
+        <LogType>"1183-Trfc Collision-Unkn Inj"</LogType>
+        <Location>"US101 S / Topanga Cyn Blvd"</Location>
+        <LocationDesc>"SB 101 JNO TOPANGA CYN"</LocationDesc>
+        <Area>"Malibu"</Area>
+        <ThomasBrothers>""</ThomasBrothers>
+        <LATLON>"34040000:118600000"</LATLON>
+        <LogDetails>
+          <details>
+            <DetailTime>"Feb 11 2026  1:16PM"</DetailTime>
+            <IncidentDetail>"[1] 2 VEH TC SB 101 BLOCKING LN 2"</IncidentDetail>
+          </details>
+        </LogDetails>
+      </Log>
+      <Log ID="260211LA0150">
+        <LogTime>"Feb 11 2026 12:00PM"</LogTime>
+        <LogType>"SPINOUT"</LogType>
+        <Location>"SR2 / Big Pines Hwy"</Location>
+        <LocationDesc>""</LocationDesc>
+        <Area>"Wrightwood"</Area>
+        <ThomasBrothers>""</ThomasBrothers>
+        <LATLON>""</LATLON>
+        <LogDetails>
+          <details>
+            <DetailTime>"Feb 11 2026 12:01PM"</DetailTime>
+            <IncidentDetail>"[1] SPINOUT IN SNOW NO BLOCKING"</IncidentDetail>
+          </details>
+        </LogDetails>
+      </Log>
+    </Dispatch>
+  </Center>
+</State>

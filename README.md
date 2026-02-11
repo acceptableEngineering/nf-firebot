@@ -105,6 +105,9 @@ The only required key is `NF_IDENTIFIER`. It is also the only value that is not 
 | `TWILIO_AUTH_TOKEN`   | N        | string  | Your secret Twilio API Auth Token, found in your Twilio dashboard | N/A |
 | `TWILIO_NUMBER`       | N        | string  | Your Twilio-registered phone number | `+18184567890` |
 | `URL_SHORT`           | N        | string  | The domain name you want to use as a URL shortener in SMS | `lm7.us` |
+| `CHP_ENABLED`         | N        | boolean | Enable CHP CAD feed integration to enrich fire incidents with nearby CHP dispatch details. Defaults to `False` | `True` |
+| `CHP_PROXIMITY_MILES` | N        | float   | Radius in miles to match CHP incidents to fires. Defaults to `5` | `5` |
+| `CHP_FEED_URL`        | N        | string  | CHP XML feed URL (overridable for testing). Defaults to the public CHP statewide feed | `https://media.chp.ca.gov/sa_xml/sa.xml` |
 
 ### Setup: Telegram (Optional)
 Read about how to setup up a Telegram channel and bot/credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)

@@ -14,6 +14,8 @@ import logging
 import os
 import sys
 import json
+import math
+import hashlib
 import re
 import json_log_formatter
 import requests
@@ -21,6 +23,7 @@ import tinydb
 from twilio.rest import Client
 from dotenv import dotenv_values
 from lxml import html
+from lxml import etree
 
 # Initialize JSON logging
 formatter = json_log_formatter.JSONFormatter()
@@ -38,9 +41,10 @@ MOCK_DATA = False
 logger.setLevel(logging.ERROR)
 
 exec_path = os.path.dirname(os.path.realpath(__file__))
-db = tinydb.TinyDB(exec_path + "/db.json")
-db_contacts = tinydb.TinyDB(exec_path + "/db_contacts.json")
-db_urls = tinydb.TinyDB(exec_path + "/db_urls.json")
+db = tinydb.TinyDB(exec_path + '/db.json')
+db_contacts = tinydb.TinyDB(exec_path + '/db_contacts.json')
+db_urls = tinydb.TinyDB(exec_path + '/db_urls.json')
+db_chp = tinydb.TinyDB(exec_path + '/db_chp.json')
 
 # ------------------------------------------------------------------------------
 """
@@ -69,6 +73,13 @@ else:
         "http://www.wildcad.net/WCCA-" + secrets["NF_IDENTIFIER"] + "recent.htm"
     )
 
+if 'CHP_ENABLED' in secrets and secrets['CHP_ENABLED'].strip().lower() == 'true':
+    config['chp_enabled'] = True
+    config['chp_proximity_miles'] = float(secrets.get('CHP_PROXIMITY_MILES', '5'))
+    config['chp_feed_url'] = secrets.get('CHP_FEED_URL', 'https://media.chp.ca.gov/sa_xml/sa.xml')
+else:
+    config['chp_enabled'] = False
+
 # ------------------------------------------------------------------------------
 
 for arg in sys.argv:
@@ -82,8 +93,9 @@ for arg in sys.argv:
         if secrets["WILDWEB_E"]:
             config["wildcad_url"] = ".development/wildweb-e_mock_data.json"
         else:
-            config["wildcad_url"] = ".development/wildcad_mock_data.htm"
-        logger.debug("Using mock data: %s", config["wildcad_url"])
+            config['wildcad_url'] = '.development/wildcad_mock_data.htm'
+        config['chp_mock_path'] = '.development/chp_mock_data.xml'
+        logger.debug('Using mock data: %s', config['wildcad_url'])
 
 # ------------------------------------------------------------------------------
 
@@ -321,6 +333,15 @@ def empty_fill(input_str):
 
 # ------------------------------------------------------------------------------
 
+def strip_chp_quotes(input_str):
+    """
+    Strips surrounding quote characters from CHP XML text values
+    """
+    if input_str:
+        return input_str.strip().strip('"')
+    return ''
+
+# ------------------------------------------------------------------------------
 
 def event_has_changed(inci_dict, inci_db_entry_dict):
     """
@@ -896,6 +917,40 @@ def convert_gps_to_decimal(input_int):
 
 # ------------------------------------------------------------------------------
 
+def parse_chp_latlon(latlon_str):
+    """
+    Converts CHP LATLON format to decimal degrees.
+    Input:  "38825387:120028530"
+    Output: (38.825387, -120.028530)
+    Returns False if parsing fails.
+    """
+    latlon_str = strip_chp_quotes(latlon_str)
+    if not latlon_str or ':' not in latlon_str:
+        return False
+
+    try:
+        parts = latlon_str.split(':')
+        lat = float(parts[0]) / 1000000
+        lon = -(float(parts[1]) / 1000000)
+        return (lat, lon)
+    except (ValueError, IndexError):
+        return False
+
+# ------------------------------------------------------------------------------
+
+def haversine_distance_miles(lat1, lon1, lat2, lon2):
+    """
+    Calculates the great-circle distance in miles between two lat/lon points
+    """
+    R = 3959
+    lat1_r, lat2_r = math.radians(lat1), math.radians(lat2)
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + \
+        math.cos(lat1_r) * math.cos(lat2_r) * math.sin(dlon / 2) ** 2
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+# ------------------------------------------------------------------------------
 
 def process_alerts(inci_list):
     """
@@ -1091,9 +1146,236 @@ def perform_cleanup(inci_list):
 
 # ------------------------------------------------------------------------------
 
-logger.debug("Running from %s", exec_path)
+def fetch_chp_feed():
+    """
+    Data source: CHP CAD XML Feed
+    Fetches and parses all incidents from the CHP statewide XML feed.
+    Returns a list of dicts, one per CHP log entry.
+    """
+    try:
+        if MOCK_DATA:
+            with open(config['chp_mock_path'], 'r', encoding='utf-8') as file:
+                page = file.read()
+        else:
+            response = requests.get(config['chp_feed_url'], timeout=15)
+            page = response.content
+
+        tree = etree.fromstring(page if isinstance(page, bytes) else page.encode('utf-8'))
+        chp_incidents = []
+
+        for log in tree.xpath('//Log'):
+            latlon_raw = log.findtext('LATLON', default='')
+            coords = parse_chp_latlon(latlon_raw)
+            if coords is False:
+                continue
+
+            details_list = []
+            log_details = log.find('LogDetails')
+            if log_details is not None:
+                for detail in log_details.findall('details'):
+                    details_list.append({
+                        'time': strip_chp_quotes(detail.findtext('DetailTime', default='')),
+                        'text': strip_chp_quotes(detail.findtext('IncidentDetail', default='')),
+                        'type': 'incident'
+                    })
+                for unit in log_details.findall('units'):
+                    details_list.append({
+                        'time': strip_chp_quotes(unit.findtext('UnitTime', default='')),
+                        'text': strip_chp_quotes(unit.findtext('UnitDetail', default='')),
+                        'type': 'unit'
+                    })
+
+            center = log.xpath('ancestor::Center')
+            dispatch = log.xpath('ancestor::Dispatch')
+
+            chp_incidents.append({
+                'log_id': log.get('ID', ''),
+                'log_time': strip_chp_quotes(log.findtext('LogTime', default='')),
+                'log_type': strip_chp_quotes(log.findtext('LogType', default='')),
+                'location': strip_chp_quotes(log.findtext('Location', default='')),
+                'location_desc': strip_chp_quotes(log.findtext('LocationDesc', default='')),
+                'area': strip_chp_quotes(log.findtext('Area', default='')),
+                'lat': coords[0],
+                'lon': coords[1],
+                'center_id': center[0].get('ID', '') if center else '',
+                'dispatch_id': dispatch[0].get('ID', '') if dispatch else '',
+                'details': details_list
+            })
+
+        logger.debug('CHP feed: parsed %d incidents', len(chp_incidents))
+        return chp_incidents
+
+    except Exception as error:
+        logger.error('CHP feed fetch/parse error: %s', error)
+        return []
+
+# ------------------------------------------------------------------------------
+
+def find_nearby_fire(chp_lat, chp_lon):
+    """
+    Searches the fire incident DB for the nearest fire within CHP_PROXIMITY_MILES.
+    Returns the fire DB entry dict, or False if none found.
+    """
+    closest_fire = False
+    closest_distance = float('inf')
+
+    for fire in db.all():
+        if 'x' not in fire or 'y' not in fire:
+            continue
+        try:
+            fire_lat = float(fire['y'])
+            fire_lon = float(fire['x'])
+        except (ValueError, TypeError):
+            continue
+
+        distance = haversine_distance_miles(chp_lat, chp_lon, fire_lat, fire_lon)
+        if distance <= config['chp_proximity_miles'] and distance < closest_distance:
+            closest_distance = distance
+            closest_fire = fire
+
+    return closest_fire
+
+# ------------------------------------------------------------------------------
+
+def chp_detail_already_sent(chp_log_id, detail_time, detail_text):
+    """
+    Checks db_chp to see if this CHP detail line has already been sent.
+    """
+    detail_hash = hashlib.md5(
+        (chp_log_id + detail_time + detail_text).encode()
+    ).hexdigest()[:8]
+    return len(db_chp.search(tinydb.Query().detail_hash == detail_hash)) > 0
+
+# ------------------------------------------------------------------------------
+
+def record_chp_detail_sent(chp_log_id, fire_inci_id, detail_time, detail_text, detail_type):
+    """
+    Records a sent CHP detail line in db_chp for deduplication.
+    """
+    detail_hash = hashlib.md5(
+        (chp_log_id + detail_time + detail_text).encode()
+    ).hexdigest()[:8]
+    db_chp.insert({
+        'chp_log_id': chp_log_id,
+        'fire_inci_id': fire_inci_id,
+        'detail_hash': detail_hash,
+        'detail_time': detail_time,
+        'detail_text': detail_text,
+        'detail_type': detail_type,
+        'sent_at': datetime.datetime.now().isoformat()
+    })
+
+# ------------------------------------------------------------------------------
+
+def generate_chp_rich_notif(fire_db_entry, chp_incident, detail):
+    """
+    Generates a Telegram HTML notification for a CHP detail line,
+    referencing the matched fire incident.
+    """
+    if 'TELEGRAM_CHAT_ID' in secrets and 'original_message_id' in fire_db_entry:
+        if '@' in secrets['TELEGRAM_CHAT_ID']:
+            telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID'].replace('@', '')
+        else:
+            telegram_chat_id_stripped = secrets['TELEGRAM_CHAT_ID']
+        notif_body = 'CHP Activity near <b><a href="https://t.me/' + \
+            telegram_chat_id_stripped + '/' + \
+            str(fire_db_entry['original_message_id']) + '">' + \
+            fire_db_entry['id'] + '</a></b>'
+    else:
+        notif_body = 'CHP Activity near <b>' + fire_db_entry['id'] + '</b>'
+
+    notif_body += '\n<em>' + chp_incident['log_type'] + '</em>'
+    notif_body += '\n<em>' + chp_incident['location']
+    if chp_incident['area']:
+        notif_body += ' (' + chp_incident['area'] + ')'
+    notif_body += '</em>'
+
+    prefix = '[Unit] ' if detail['type'] == 'unit' else ''
+    notif_body += '\n' + detail['time'] + ': ' + prefix + detail['text']
+
+    return notif_body
+
+# ------------------------------------------------------------------------------
+
+def generate_chp_plain_notif(fire_db_entry, chp_incident, detail):
+    """
+    Generates a plain-text SMS notification for a CHP detail line.
+    """
+    notif_body = 'CHP near ' + fire_db_entry['id'] + ':\n'
+    notif_body += chp_incident['log_type'] + '\n'
+    notif_body += chp_incident['location']
+    if chp_incident['area']:
+        notif_body += ' (' + chp_incident['area'] + ')'
+    notif_body += '\n'
+
+    prefix = '[Unit] ' if detail['type'] == 'unit' else ''
+    notif_body += detail['time'] + ': ' + prefix + detail['text']
+
+    return notif_body
+
+# ------------------------------------------------------------------------------
+
+def cleanup_chp_db():
+    """
+    Removes CHP tracking records older than 24 hours.
+    """
+    cutoff = datetime.datetime.now() - datetime.timedelta(hours=24)
+    to_remove = []
+
+    for record in db_chp.all():
+        try:
+            sent_at = datetime.datetime.fromisoformat(record['sent_at'])
+            if sent_at < cutoff:
+                to_remove.append(record.doc_id)
+        except (ValueError, KeyError):
+            to_remove.append(record.doc_id)
+
+    if to_remove:
+        db_chp.remove(doc_ids=to_remove)
+        logger.debug('CHP cleanup: removed %d old records', len(to_remove))
+
+# ------------------------------------------------------------------------------
+
+def process_chp_alerts():
+    """
+    Main CHP processing pipeline: fetch feed, match to fires, notify on new details.
+    """
+    if not config.get('chp_enabled', False):
+        return False
+
+    chp_incidents = fetch_chp_feed()
+    if not chp_incidents:
+        return False
+
+    for chp_incident in chp_incidents:
+        fire = find_nearby_fire(chp_incident['lat'], chp_incident['lon'])
+        if fire is False:
+            continue
+
+        for detail in chp_incident['details']:
+            if not detail['text']:
+                continue
+
+            if chp_detail_already_sent(chp_incident['log_id'], detail['time'], detail['text']):
+                continue
+
+            logger.debug('CHP detail for %s: %s', fire['id'], detail['text'])
+            send_telegram(generate_chp_rich_notif(fire, chp_incident, detail), 'low')
+            send_sms(generate_chp_plain_notif(fire, chp_incident, detail))
+            record_chp_detail_sent(
+                chp_incident['log_id'], fire['id'],
+                detail['time'], detail['text'], detail['type']
+            )
+
+    cleanup_chp_db()
+    return True
+
+# ------------------------------------------------------------------------------
+
+logger.debug('Running from %s', exec_path)
 
 process_wildcad_inci_list = process_wildcad()
 process_alerts(process_wildcad_inci_list)
 process_major_alerts()
+process_chp_alerts()
 process_daily_recap()
