@@ -3,3 +3,4 @@ db*.json
 *.DS_Store
 *log.json
 __pycache__/
+*env*
