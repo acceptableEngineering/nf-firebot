@@ -207,6 +207,14 @@ def process_wildcad():
         else:
             page = page.content
 
+            if (
+                secrets["WILDWEB_E"]
+                and secrets.get("STORE_RAW_CAD") == "True"
+            ):
+                with open("/tmp/wildcad_raw.json", "wb") as raw_file:
+                    raw_file.write(page)
+                logger.debug("Stored raw CAD JSON at /tmp/wildcad_raw.json")
+
     checked_ids = []
     counter = 0
     data = []

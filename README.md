@@ -105,6 +105,7 @@ The only required key is `NF_IDENTIFIER`. It is also the only value that is not 
 | `TWILIO_AUTH_TOKEN`   | N        | string  | Your secret Twilio API Auth Token, found in your Twilio dashboard | N/A |
 | `TWILIO_NUMBER`       | N        | string  | Your Twilio-registered phone number | `+18184567890` |
 | `URL_SHORT`           | N        | string  | The domain name you want to use as a URL shortener in SMS | `lm7.us` |
+| `STORE_RAW_CAD`       | N        | boolean | If `True` (and `WILDWEB_E` is set), each fetch's raw CAD JSON is written to `/tmp/wildcad_raw.json` for debugging | `True` |
 
 ### Setup: Telegram (Optional)
 Read about how to setup up a Telegram channel and bot/credentials: [Bots: An introduction for developers](https://core.telegram.org/bots/#3-how-do-i-create-a-bot)
